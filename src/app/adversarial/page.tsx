@@ -1,3 +1,4 @@
+"use client";
 
 import React, { useState } from 'react';
 
@@ -56,11 +57,11 @@ export default function AdversarialAudit() {
           <div className="border border-gray-700 bg-gray-800 rounded-lg p-8 text-center animate-pulse">
              <p className="text-red-400 font-bold mb-2">Executing Attack Matrix...</p>
              <p className="text-sm text-gray-400 text-left w-1/2 mx-auto">
-               > Bypassing JWT signatures...<br/>
-               > Modifying RBAC payload...<br/>
-               > Injecting Mongo operators...<br/>
-               > Attempting financial mutations...<br/>
-               > Attempting Audit Log truncation...<br/>
+               &gt; Bypassing JWT signatures...<br/>
+               &gt; Modifying RBAC payload...<br/>
+               &gt; Injecting Mongo operators...<br/>
+               &gt; Attempting financial mutations...<br/>
+               &gt; Attempting Audit Log truncation...<br/>
              </p>
           </div>
         )}
