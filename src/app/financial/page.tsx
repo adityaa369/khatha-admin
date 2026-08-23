@@ -18,7 +18,7 @@ export default function FinancialCommandCenter() {
           <MetricCard 
             title="Ledger Difference" 
             value="?0" 
-            status="?? Balanced"
+            status="?? Healthy"
             explanation="The total money recorded as leaving accounts matches the total money recorded as entering accounts."
           />
           <MetricCard 

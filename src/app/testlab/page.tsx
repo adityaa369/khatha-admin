@@ -4,10 +4,10 @@ import React, { useState } from 'react';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 
 export default function TestLab() {
-  const [report, setReport] = useState(null);
+  const [report, setReport] = useState<any>(null);
   const [isRunning, setIsRunning] = useState(false);
 
-  const simulateRun = (scenarioName) => {
+  const simulateRun = (scenarioName: string) => {
     setIsRunning(true);
     setReport(null);
     setTimeout(() => {

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 
 export default function ReadinessGate() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<any>(null);
 
   useEffect(() => {
     // Simulated fetch of the GET /api/admin/system/readiness response
@@ -97,7 +97,7 @@ export default function ReadinessGate() {
              <h2 className="text-xl font-bold border-b border-gray-700 pb-2 mb-4">Evidence & Traceability Matrix</h2>
              
              <div className="space-y-4">
-               {data.gates.map((gate, idx) => (
+               {data.gates.map((gate: any, idx: number) => (
                  <div key={idx} className="bg-gray-900 border border-gray-700 p-4 rounded text-sm flex flex-col space-y-2">
                    
                    <div className="flex justify-between items-center border-b border-gray-800 pb-2">

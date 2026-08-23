@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 
 export default function AdversarialAudit() {
-  const [report, setReport] = useState(null);
+  const [report, setReport] = useState<any>(null);
   const [isRunning, setIsRunning] = useState(false);
 
   const runAudit = () => {
@@ -71,7 +71,7 @@ export default function AdversarialAudit() {
             <h2 className="text-xl font-bold text-gray-100 mb-4 border-b border-gray-700 pb-2">Tests</h2>
             
             <div className="grid grid-cols-2 gap-x-12 gap-y-2 mb-8 text-sm">
-              {report.categories.map(cat => (
+              {report.categories.map((cat: any) => (
                 <div key={cat.name} className="flex justify-between items-center py-2 border-b border-gray-700 border-dashed">
                   <span className="text-gray-300">{cat.name}</span>
                   <span className="font-bold text-green-400">{cat.passed}/{cat.total} ??</span>
