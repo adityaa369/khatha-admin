@@ -1,4 +1,65 @@
+const fs = require('fs');
+const path = require('path');
 
+// 5. src/app/login/page.tsx
+const loginPage = `
+"use client";
+import React, { useState } from 'react';
+
+export default function Login() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+        
+        try {
+            const res = await fetch('/api/admin/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            
+            const data = await res.json();
+            if (data.success) {
+                window.location.href = '/';
+            } else {
+                setError(data.message || 'Login failed');
+            }
+        } catch (err) {
+            setError('Network error');
+        }
+    };
+
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="max-w-md w-full bg-white p-8 border rounded shadow-sm">
+                <h1 className="text-2xl font-bold mb-6 text-center">Khatha Operations Login</h1>
+                {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+                <form onSubmit={handleLogin}>
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium mb-1">Email</label>
+                        <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full border rounded p-2" required />
+                    </div>
+                    <div className="mb-6">
+                        <label className="block text-sm font-medium mb-1">Password</label>
+                        <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full border rounded p-2" required />
+                    </div>
+                    <button type="submit" className="w-full bg-black text-white font-bold py-2 rounded hover:bg-gray-800">
+                        Authenticate
+                    </button>
+                </form>
+            </div>
+        </div>
+    );
+}
+`;
+fs.writeFileSync(path.join(__dirname, 'src/app/login/page.tsx'), loginPage);
+
+// 6. src/app/page.tsx (Dashboard with strict "No backend evidence -> no claim")
+const dashboardPage = `
 "use client";
 import React, { useState, useEffect } from 'react';
 import { MetricCard } from '@/components/ui/MetricCard';
@@ -40,7 +101,7 @@ export default function Dashboard() {
 
   const formatRupees = (paise: number) => {
       if (paise === null || paise === undefined) return 'Unknown';
-      return `?${(paise / 100).toLocaleString('en-IN')}`;
+      return \`?\${(paise / 100).toLocaleString('en-IN')}\`;
   };
 
   if (loading && !data) {
@@ -58,16 +119,16 @@ export default function Dashboard() {
         <div className="bg-white border rounded-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center shadow-sm">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Good afternoon, Operator</h1>
-            <p className={`text-sm mt-1 ${error ? 'text-red-600' : (isHealthy ? 'text-green-600' : 'text-yellow-600')}`}>
+            <p className={\`text-sm mt-1 \${error ? 'text-red-600' : (isHealthy ? 'text-green-600' : 'text-yellow-600')}\`}>
               {error ? '?? KHATHA REQUIRES ATTENTION: Unable to reach backend systems.' : (isHealthy ? 'Khatha is operating normally' : 'Khatha requires attention. Infrastructure may be degraded.')}
             </p>
           </div>
           <div className="flex flex-col items-end mt-4 md:mt-0 space-y-2">
             <div className="flex space-x-2">
-                <span className={`text-xs px-2 py-1 rounded-full font-medium ${error || !data?.health ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                <span className={\`text-xs px-2 py-1 rounded-full font-medium \${error || !data?.health ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}\`}>
                 API: {error || !data?.health ? '?? Unknown' : '?? Connected'}
                 </span>
-                <span className={`text-xs px-2 py-1 rounded-full font-medium ${error || data?.health?.db !== 'connected' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                <span className={\`text-xs px-2 py-1 rounded-full font-medium \${error || data?.health?.db !== 'connected' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}\`}>
                 DB: {error || data?.health?.db !== 'connected' ? '?? Unknown' : '?? Connected'}
                 </span>
             </div>
@@ -108,13 +169,13 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <MetricCard 
             title="API P95 Latency" 
-            value={error || !data?.health?.apiP95 ? 'Unknown' : `${data.health.apiP95} ms`} 
+            value={error || !data?.health?.apiP95 ? 'Unknown' : \`\${data.health.apiP95} ms\`} 
             status={error || !data?.health?.apiP95 ? '? Offline' : '?? Healthy'}
             explanation="This measures how quickly the server responds to requests. Source: Backend metrics."
           />
           <MetricCard 
             title="Database Connection" 
-            value={error || !data?.health?.dbConnections ? 'Unknown' : `${data.health.dbConnections} / 60`} 
+            value={error || !data?.health?.dbConnections ? 'Unknown' : \`\${data.health.dbConnections} / 60\`} 
             status={error || data?.health?.db !== 'connected' ? '? Offline' : '?? Healthy'}
             explanation="Active connections to MongoDB Atlas versus maximum allowed pool size."
           />
@@ -129,3 +190,7 @@ export default function Dashboard() {
     </div>
   );
 }
+`;
+fs.writeFileSync(path.join(__dirname, 'src/app/page.tsx'), dashboardPage);
+
+console.log("UI Components generated.");
