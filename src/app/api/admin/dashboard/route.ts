@@ -1,5 +1,4 @@
-
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
 export async function GET() {
@@ -38,7 +37,8 @@ export async function GET() {
                 ledgerBalanced: reconData.data?.ledgerBalanced ?? null,
                 criticalIncidents: reconData.data?.criticalIncidents || 0,
                 killSwitchEnabled: dashData.killSwitchEnabled,
-                health: dashData.health || null
+                health: dashData.health || null,
+                infrastructure: dashData.infrastructure || null
             }
         });
     } catch (error) {

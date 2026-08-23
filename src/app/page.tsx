@@ -47,7 +47,7 @@ export default function Dashboard() {
   }
 
   // Derive status cleanly
-  const isHealthy = !error && data?.health?.api === 'healthy' && data?.health?.db === 'connected';
+  const isHealthy = !error && data?.infrastructure?.database?.status === 'CONNECTED' && data?.infrastructure?.redis?.status === 'READY';
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -62,12 +62,12 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="flex flex-col items-end mt-4 md:mt-0 space-y-2">
-            <div className="flex space-x-2">
-                <span className={"text-xs px-2 py-1 rounded-full font-medium " + (error || !data?.health ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800')}>
-                API: {error || !data?.health ? '🔴 Unknown' : '🟢 Connected'}
+                        <div className="flex space-x-2">
+                <span className={"text-xs px-2 py-1 rounded-full font-medium " + (error || data?.infrastructure?.redis?.status !== 'READY' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800')}>
+                API: {error || data?.infrastructure?.redis?.status !== 'READY' ? '🔴 Offline' : '🟢 Connected'}
                 </span>
-                <span className={"text-xs px-2 py-1 rounded-full font-medium " + (error || data?.health?.db !== 'connected' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800')}>
-                DB: {error || data?.health?.db !== 'connected' ? '🔴 Unknown' : '🟢 Connected'}
+                <span className={"text-xs px-2 py-1 rounded-full font-medium " + (error || data?.infrastructure?.database?.status !== 'CONNECTED' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800')}>
+                DB: {error || data?.infrastructure?.database?.status !== 'CONNECTED' ? '🔴 Offline' : '🟢 Connected'}
                 </span>
             </div>
             <span className="text-xs text-gray-500 font-mono">Last verified: {lastVerified || 'Never'}</span>
@@ -106,16 +106,16 @@ export default function Dashboard() {
         <h2 className="text-lg font-bold text-gray-900 mt-8 mb-4">INFRASTRUCTURE</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <MetricCard 
-            title="API P95 Latency" 
-            value={error || !data?.health?.apiP95 ? 'Unknown' : (data.health.apiP95 + ' ms')} 
-            status={error || !data?.health?.apiP95 ? '🔴 Offline' : '🟢 Healthy'}
+                        title="API P95 Latency" 
+            value={error || !data?.health?.http?.latency?.p95 ? 'Unknown' : (data.health.http.latency.p95.toFixed(2) + ' ms')} 
+            status={error || !data?.health?.http?.latency?.p95 ? '🔴 Offline' : '🟢 Healthy'}
             explanation="This measures how quickly the server responds to requests. Source: Backend metrics."
           />
           <MetricCard 
-            title="Database Connection" 
-            value={error || !data?.health?.dbConnections ? 'Unknown' : (data.health.dbConnections + ' / 60')} 
-            status={error || data?.health?.db !== 'connected' ? '🔴 Offline' : '🟢 Healthy'}
-            explanation="Active connections to MongoDB Atlas versus maximum allowed pool size."
+                        title="Database Latency" 
+            value={error || !data?.infrastructure?.database ? 'Unknown' : (data.infrastructure.database.latencyMs + ' ms')} 
+            status={error || data?.infrastructure?.database?.status !== 'CONNECTED' ? '🔴 Offline' : '🟢 Healthy'}
+            explanation="Live PING latency from backend to MongoDB Atlas."
           />
           <MetricCard 
             title="Financial Kill Switch" 
@@ -128,3 +128,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+
