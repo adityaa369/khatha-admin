@@ -82,7 +82,7 @@ export default function Dashboard() {
             title="Payments Today" 
             value={error || data?.paymentsToday === undefined ? 'Unknown' : formatRupees(data.paymentsToday)} 
             explanation="The total value of all successfully committed loan and chit payments today."
-            status={error || data?.paymentsToday === undefined ? '? Offline' : '?? Healthy'}
+            status={error || data?.paymentsToday === undefined ? '?? Offline' : '?? Healthy'}
           />
           <MetricCard 
             title="Active Loans" 
@@ -92,13 +92,13 @@ export default function Dashboard() {
           <MetricCard 
             title="Ledger Gap" 
             value={error || data?.ledgerBalanced === null ? 'Unknown' : (data.ledgerBalanced ? '?0' : 'Discrepancy')} 
-            status={error || data?.ledgerBalanced === null ? '? Offline' : (data.ledgerBalanced ? '?? Healthy' : '?? Critical')}
+            status={error || data?.ledgerBalanced === null ? '?? Offline' : (data.ledgerBalanced ? '?? Healthy' : '?? Critical')}
             explanation="Difference between total system Debits and Credits. ?0 means the reconciliation engine currently finds no mathematical imbalance."
           />
           <MetricCard 
             title="Critical Incidents" 
             value={error || data?.criticalIncidents === undefined ? 'Unknown' : data.criticalIncidents.toString()} 
-            status={error || data?.criticalIncidents === undefined ? '? Offline' : (data.criticalIncidents === 0 ? '?? Healthy' : '?? Critical')}
+            status={error || data?.criticalIncidents === undefined ? '?? Offline' : (data.criticalIncidents === 0 ? '?? Healthy' : '?? Critical')}
             explanation="Open financial reconciliation mismatches requiring immediate investigation."
           />
         </div>
@@ -109,19 +109,19 @@ export default function Dashboard() {
           <MetricCard 
             title="API P95 Latency" 
             value={error || !data?.health?.apiP95 ? 'Unknown' : `${data.health.apiP95} ms`} 
-            status={error || !data?.health?.apiP95 ? '? Offline' : '?? Healthy'}
+            status={error || !data?.health?.apiP95 ? '?? Offline' : '?? Healthy'}
             explanation="This measures how quickly the server responds to requests. Source: Backend metrics."
           />
           <MetricCard 
             title="Database Connection" 
             value={error || !data?.health?.dbConnections ? 'Unknown' : `${data.health.dbConnections} / 60`} 
-            status={error || data?.health?.db !== 'connected' ? '? Offline' : '?? Healthy'}
+            status={error || data?.health?.db !== 'connected' ? '?? Offline' : '?? Healthy'}
             explanation="Active connections to MongoDB Atlas versus maximum allowed pool size."
           />
           <MetricCard 
             title="Financial Kill Switch" 
             value={error || data?.killSwitchEnabled === undefined ? 'Unknown' : (data.killSwitchEnabled ? 'ON' : 'OFF')} 
-            status={error || data?.killSwitchEnabled === undefined ? '? Offline' : (data.killSwitchEnabled ? '?? Critical' : '?? Healthy')}
+            status={error || data?.killSwitchEnabled === undefined ? '?? Offline' : (data.killSwitchEnabled ? '?? Critical' : '?? Healthy')}
             explanation="When ON, financial mutations are blocked across the backend. Customer history and other permitted read-only operations remain available."
           />
         </div>
