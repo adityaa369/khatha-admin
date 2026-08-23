@@ -16,10 +16,10 @@ export default function ReconciliationCommandCenter() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <MetricCard title="Loans" value="100%" status="?? Healthy" explanation="Loan paidAmountPaise matches ledger." />
-          <MetricCard title="Chits" value="100%" status="?? Healthy" explanation="Dividend/Commission allocation math matches pot." />
-          <MetricCard title="Ledger" value="Balanced" status="?? Healthy" explanation="Global Debits equals Global Credits." />
-          <MetricCard title="Open Incidents" value="1" status="?? Critical" explanation="Financial mismatches requiring human resolution." />
+          <MetricCard title="Loans" value="100%" status="🟢 Healthy" explanation="Loan paidAmountPaise matches ledger." />
+          <MetricCard title="Chits" value="100%" status="🟢 Healthy" explanation="Dividend/Commission allocation math matches pot." />
+          <MetricCard title="Ledger" value="Balanced" status="🟢 Healthy" explanation="Global Debits equals Global Credits." />
+          <MetricCard title="Open Incidents" value="1" status="🔴 Critical" explanation="Financial mismatches requiring human resolution." />
         </div>
 
         {/* Global Financial Health (LEDGER-001) */}
@@ -39,8 +39,8 @@ export default function ReconciliationCommandCenter() {
             </div>
             <div className="border-l pl-8">
               <p className="text-gray-500 mb-1">Difference</p>
-              <p className="font-mono text-xl text-green-700">?0</p>
-              <StatusBadge status="?? Healthy" text="BALANCED" />
+              <p className="font-mono text-xl text-green-700">₹0</p>
+              <StatusBadge status="🟢 Healthy" text="BALANCED" />
             </div>
           </div>
         </div>

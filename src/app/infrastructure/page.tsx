@@ -25,22 +25,22 @@ export default function InfraCommandCenter() {
             <tbody className="bg-white divide-y divide-gray-200">
               <tr>
                 <td className="px-6 py-4 font-bold text-gray-900">API</td>
-                <td className="px-6 py-4"><StatusBadge status="?? Healthy" text="??" /></td>
+                <td className="px-6 py-4"><StatusBadge status="🟢 Healthy" text="??" /></td>
                 <td className="px-6 py-4 text-gray-600">Requests being served (Liveness: OK, Readiness: OK)</td>
               </tr>
               <tr>
                 <td className="px-6 py-4 font-bold text-gray-900 flex items-center">MongoDB</td>
-                <td className="px-6 py-4"><StatusBadge status="?? Healthy" text="??" /></td>
+                <td className="px-6 py-4"><StatusBadge status="🟢 Healthy" text="??" /></td>
                 <td className="px-6 py-4 text-gray-600">Database connected (Authoritative Ledger)</td>
               </tr>
               <tr>
                 <td className="px-6 py-4 font-bold text-gray-900">Redis</td>
-                <td className="px-6 py-4"><StatusBadge status="?? Healthy" text="??" /></td>
+                <td className="px-6 py-4"><StatusBadge status="🟢 Healthy" text="??" /></td>
                 <td className="px-6 py-4 text-gray-600">Cache/coordination available</td>
               </tr>
               <tr>
                 <td className="px-6 py-4 font-bold text-gray-900">Backups</td>
-                <td className="px-6 py-4"><StatusBadge status="?? Attention" text="??" /></td>
+                <td className="px-6 py-4"><StatusBadge status="🟡 Attention" text="??" /></td>
                 <td className="px-6 py-4 text-gray-600">Latest backup available, but RPO Target Missed</td>
               </tr>
             </tbody>

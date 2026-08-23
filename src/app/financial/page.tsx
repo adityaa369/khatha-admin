@@ -12,25 +12,25 @@ export default function FinancialCommandCenter() {
           <MetricCard 
             title="Payments Today" 
             value="?8,42,300" 
-            status="?? Healthy"
+            status="🟢 Healthy"
             explanation="The total volume of successfully settled payments across Loans and Chits."
           />
           <MetricCard 
             title="Ledger Difference" 
-            value="?0" 
-            status="?? Healthy"
+            value="₹0" 
+            status="🟢 Healthy"
             explanation="The total money recorded as leaving accounts matches the total money recorded as entering accounts."
           />
           <MetricCard 
             title="Reconciliation" 
             value="PASS" 
-            status="?? Healthy"
+            status="🟢 Healthy"
             explanation="Mathematical verification of outstanding balances against underlying ledgers."
           />
           <MetricCard 
             title="Financial Incidents" 
             value="2" 
-            status="?? Attention"
+            status="🟡 Attention"
             explanation="Open operational anomalies requiring Support or Finance review."
           />
         </div>

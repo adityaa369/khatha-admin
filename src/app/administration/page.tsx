@@ -25,8 +25,8 @@ export default function AdministrationCenter() {
               <tr>
                 <td className="py-3 font-mono font-bold text-gray-900">OPS-291</td>
                 <td className="py-3 font-medium text-gray-700">Operations Admin</td>
-                <td className="py-3"><StatusBadge status="?? Healthy" text="Active" /></td>
-                <td className="py-3"><StatusBadge status="?? Healthy" text="Enabled" /></td>
+                <td className="py-3"><StatusBadge status="🟢 Healthy" text="Active" /></td>
+                <td className="py-3"><StatusBadge status="🟢 Healthy" text="Enabled" /></td>
                 <td className="py-3 text-gray-500">14:39 TODAY</td>
               </tr>
             </tbody>

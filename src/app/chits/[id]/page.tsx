@@ -19,7 +19,7 @@ export default function ChitDetail() {
               <button className="px-4 py-2 bg-blue-50 text-blue-700 rounded text-sm font-medium border border-blue-200 shadow-sm hover:bg-blue-100 transition-colors">
                 ?? Explain This Chit
               </button>
-              <StatusBadge status="?? Healthy" text="ACTIVE" />
+              <StatusBadge status="🟢 Healthy" text="ACTIVE" />
             </div>
           </div>
           <div className="flex space-x-8 text-sm">
@@ -39,7 +39,7 @@ export default function ChitDetail() {
                 <p className="text-xs text-gray-400">14:31:52</p>
               </div>
               <div className="text-center">
-                <StatusBadge status="?? Healthy" text="STATE MATCH: YES" />
+                <StatusBadge status="🟢 Healthy" text="STATE MATCH: YES" />
               </div>
               <div className="text-right">
                 <p className="text-xs text-gray-500 uppercase tracking-wide flex items-center justify-end">
@@ -76,7 +76,7 @@ export default function ChitDetail() {
           <div>
             <strong>Operational Rule Enforced:</strong> The Admin is an observer plane. There are no controls to mutate auction bids, declare winners, or modify financial states.
           </div>
-          <StatusBadge status="?? Healthy" text="READ-ONLY MODE" />
+          <StatusBadge status="🟢 Healthy" text="READ-ONLY MODE" />
         </div>
       </div>
     </div>

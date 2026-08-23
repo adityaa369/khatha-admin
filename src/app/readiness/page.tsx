@@ -21,7 +21,7 @@ export default function ReadinessGate() {
         gates: [
           { name: 'Security', status: 'PASS', evidence: 'TEST-RUN-SEC-912', env: 'STAGING', commit: 'a91bc82', assertions: '225/225', details: '0 Critical, 0 High' },
           { name: 'Financial Integrity', status: 'PASS', evidence: 'TEST-RUN-FIN-332', env: 'STAGING', commit: 'a91bc82', assertions: '71/71', details: 'All mutations protected' },
-          { name: 'Ledger', status: 'PASS', evidence: 'TEST-RUN-REC-119', env: 'STAGING', commit: 'a91bc82', assertions: '184/184', details: 'Reconciliation = ?0 diff' },
+          { name: 'Ledger', status: 'PASS', evidence: 'TEST-RUN-REC-119', env: 'STAGING', commit: 'a91bc82', assertions: '184/184', details: 'Reconciliation = ₹0 diff' },
           { name: 'State Machines', status: 'PASS', evidence: 'TEST-RUN-SM-881', env: 'STAGING', commit: 'a91bc82', assertions: '40/40', details: 'Invalid transitions blocked' },
           { name: 'Concurrency', status: 'PASS', evidence: 'TEST-RUN-CON-002', env: 'STAGING', commit: 'a91bc82', assertions: '18/18', details: 'Double-spend prevented' },
           { name: 'Infrastructure', status: 'PASS', evidence: 'TEST-RUN-INF-442', env: 'STAGING', commit: 'a91bc82', assertions: '12/12', details: 'Live/Ready endpoints pass' },

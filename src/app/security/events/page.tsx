@@ -16,7 +16,7 @@ export default function SecurityEventExplorer() {
               <p className="text-sm text-gray-500 font-mono mb-1">EVENT #SEC-8291</p>
               <h2 className="text-xl font-bold text-red-700">OTP_REPLAY</h2>
             </div>
-            <StatusBadge status="?? Critical" text="BLOCKED" />
+            <StatusBadge status="🔴 Critical" text="BLOCKED" />
           </div>
           
           <div className="grid grid-cols-2 gap-8 mb-6">

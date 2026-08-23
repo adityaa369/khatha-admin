@@ -17,7 +17,7 @@ export default function IncidentDetail() {
               </h1>
               <p className="mt-2 text-gray-700 font-medium">Loan paid amount does not match ledger-supported payments.</p>
             </div>
-            <StatusBadge status="?? Critical" text="OPEN" />
+            <StatusBadge status="🔴 Critical" text="OPEN" />
           </div>
         </div>
 
@@ -67,7 +67,7 @@ export default function IncidentDetail() {
           <div>
             <strong>Operational Rule Enforced:</strong> The Admin panel cannot directly manipulate authoritative financial balances. Resolutions must be processed via compensating ledger entries in independent workflows.
           </div>
-          <StatusBadge status="?? Healthy" text="READ-ONLY MODE" />
+          <StatusBadge status="🟢 Healthy" text="READ-ONLY MODE" />
         </div>
 
       </div>

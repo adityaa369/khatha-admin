@@ -18,20 +18,20 @@ export default function ChitCommandCenter() {
           <MetricCard 
             title="Live Auctions" 
             value="14" 
-            status="?? Healthy"
+            status="🟢 Healthy"
             explanation="Auctions currently open for bidding across all chits."
           />
           <MetricCard 
             title="Reconciliation" 
             value="ALL CLEAR" 
-            status="?? Healthy"
+            status="🟢 Healthy"
             explanation="Mathematical verification of outstanding balances against underlying ledgers."
             technical="All CHIT-002, CHIT-003, and LEDGER-001 checks passed."
           />
           <MetricCard 
             title="Financial Incidents" 
             value="1" 
-            status="?? Critical"
+            status="🔴 Critical"
             explanation="Open operational anomalies requiring Support or Finance review."
           />
         </div>
@@ -44,7 +44,7 @@ export default function ChitCommandCenter() {
               <div className="mt-2 text-3xl font-bold text-gray-900">?42,000 <span className="text-sm text-gray-500 font-normal">Current lowest bid</span></div>
             </div>
             <div className="text-right">
-              <StatusBadge status="?? Healthy" text="LIVE" />
+              <StatusBadge status="🟢 Healthy" text="LIVE" />
               <div className="mt-2 text-xl font-mono text-gray-900">03:24</div>
               <div className="text-sm text-gray-500">Members: 20 / 20</div>
             </div>

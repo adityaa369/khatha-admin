@@ -15,8 +15,8 @@ export default function CustomerDetail() {
               <p className="text-sm text-gray-500 font-mono mb-1">CUSTOMER #KH-82931</p>
               <h1 className="text-2xl font-bold text-gray-900">Aditya A. (����8291)</h1>
               <div className="mt-2 flex space-x-2">
-                <StatusBadge status="?? Healthy" text="ACTIVE" />
-                <StatusBadge status="?? Healthy" text="KYC VERIFIED" />
+                <StatusBadge status="🟢 Healthy" text="ACTIVE" />
+                <StatusBadge status="🟢 Healthy" text="KYC VERIFIED" />
               </div>
             </div>
             <div className="text-right flex space-x-4">
@@ -61,17 +61,17 @@ export default function CustomerDetail() {
           <div className="border-l-2 border-gray-200 ml-3 pl-4 space-y-6">
             <div>
               <p className="text-xs text-gray-500 mb-1">14:32 TODAY</p>
-              <p className="font-medium">Payment ?5,000 <StatusBadge status="?? Healthy" text="Successful" /></p>
+              <p className="font-medium">Payment ?5,000 <StatusBadge status="🟢 Healthy" text="Successful" /></p>
               <p className="text-sm text-gray-600 mt-1">Transaction TX-918273 linked to Loan KH-10293.</p>
             </div>
             <div>
               <p className="text-xs text-gray-500 mb-1">14:32 TODAY</p>
-              <p className="font-medium">Notification <StatusBadge status="?? Healthy" text="Delivered" /></p>
+              <p className="font-medium">Notification <StatusBadge status="🟢 Healthy" text="Delivered" /></p>
               <p className="text-sm text-gray-600 mt-1">Payment confirmation delivered via FCM.</p>
             </div>
             <div>
               <p className="text-xs text-gray-500 mb-1">12:14 TODAY</p>
-              <p className="font-medium">Login from Android Device <StatusBadge status="?? Healthy" text="Successful" /></p>
+              <p className="font-medium">Login from Android Device <StatusBadge status="🟢 Healthy" text="Successful" /></p>
             </div>
           </div>
         </div>

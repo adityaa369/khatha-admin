@@ -17,19 +17,19 @@ export default function SecurityCommandCenter() {
           <MetricCard 
             title="Blocked Requests" 
             value="481" 
-            status="?? Healthy"
+            status="🟢 Healthy"
             explanation="Malicious or abusive requests intercepted by the firewall and rate limiters."
           />
           <MetricCard 
             title="Suspicious Sessions" 
             value="2" 
-            status="?? Attention"
+            status="🟡 Attention"
             explanation="Sessions exhibiting elevated risk signals such as rapid IP changes."
           />
           <MetricCard 
             title="OTP Replay Attempts" 
             value="3" 
-            status="?? Critical"
+            status="🔴 Critical"
             explanation="Attempts to reuse a previously consumed OTP."
           />
         </div>

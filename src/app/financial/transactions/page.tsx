@@ -20,7 +20,7 @@ export default function TransactionExplorer() {
               <tr>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">TX-918273</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">?5,000.00</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><StatusBadge status="?? Healthy" text="SUCCESS" /></td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><StatusBadge status="🟢 Healthy" text="SUCCESS" /></td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">BALANCED</td>
               </tr>
             </tbody>

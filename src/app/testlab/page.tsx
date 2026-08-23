@@ -35,9 +35,9 @@ export default function TestLab() {
             <p className="text-sm font-bold text-yellow-800">?? ISOLATED STAGING ENVIRONMENT</p>
           </div>
           <div className="text-right text-sm font-medium text-yellow-800">
-             <p>Database <span className="ml-2">?? Connected</span></p>
-             <p>Redis <span className="ml-2">?? Connected</span></p>
-             <p>Firebase <span className="ml-2">?? Connected</span></p>
+             <p>Database <span className="ml-2">🟢 Connected</span></p>
+             <p>Redis <span className="ml-2">🟢 Connected</span></p>
+             <p>Firebase <span className="ml-2">🟢 Connected</span></p>
           </div>
         </div>
 

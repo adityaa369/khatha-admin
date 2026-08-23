@@ -94,9 +94,9 @@ export default function EmergencyCommandCenter() {
           <div className="bg-white rounded-lg shadow p-6">
              <h2 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">RESTORATION READINESS</h2>
              <div className="space-y-2 text-sm">
-               <div className="flex justify-between"><span>Reconciliation</span><StatusBadge status="?? Healthy" text="PASS" /></div>
+               <div className="flex justify-between"><span>Reconciliation</span><StatusBadge status="🟢 Healthy" text="PASS" /></div>
                <div className="flex justify-between"><span>Critical incidents</span><span className="font-bold">0</span></div>
-               <div className="flex justify-between"><span>MongoDB</span><StatusBadge status="?? Healthy" text="Healthy" /></div>
+               <div className="flex justify-between"><span>MongoDB</span><StatusBadge status="🟢 Healthy" text="Healthy" /></div>
              </div>
              <button className="w-full mt-6 px-4 py-2 bg-green-600 text-white rounded text-sm font-bold shadow hover:bg-green-700">
                RESTORE FINANCIAL OPERATIONS

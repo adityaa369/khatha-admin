@@ -17,17 +17,17 @@ export default function CustomerCommandCenter() {
           <MetricCard 
             title="Active Customers" 
             value="11,903" 
-            status="?? Healthy"
+            status="🟢 Healthy"
           />
           <MetricCard 
             title="Pending KYC" 
             value="381" 
-            status="?? Attention"
+            status="🟡 Attention"
           />
           <MetricCard 
             title="Security Alerts" 
             value="19" 
-            status="?? Critical"
+            status="🔴 Critical"
             explanation="Unresolved identity or authentication anomalies."
           />
         </div>
