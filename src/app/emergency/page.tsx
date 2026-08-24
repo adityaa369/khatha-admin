@@ -92,11 +92,11 @@ export default function EmergencyCommandCenter() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-bold text-gray-900 mb-1">Reason for activation *</label>
-                  <input type="text" value={reason} onChange={e => setReason(e.target.value)} className="w-full border rounded p-2 text-sm" placeholder="e.g. Suspected reconciliation drift" />
+                  <input type="text" value={reason} onChange={e => setReason(e.target.value)} className="w-full border rounded p-2 text-sm text-gray-900" placeholder="e.g. Suspected reconciliation drift" />
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-gray-900 mb-1">MFA Verification (TOTP) *</label>
-                  <input type="text" value={mfaToken} onChange={e => setMfaToken(e.target.value)} className="w-full border rounded p-2 text-sm" placeholder="6-digit code" maxLength={6} />
+                  <input type="text" value={mfaToken} onChange={e => setMfaToken(e.target.value)} className="w-full border rounded p-2 text-sm text-gray-900" placeholder="6-digit code" maxLength={6} />
                 </div>
                 <div className="pt-4">
                   <button onClick={() => handleToggle(true)} disabled={loading} className="w-full bg-red-600 text-white font-bold py-3 rounded hover:bg-red-700 disabled:opacity-50 transition-colors">
@@ -124,11 +124,11 @@ export default function EmergencyCommandCenter() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-bold text-gray-900 mb-1">Reason for restoration *</label>
-                  <input type="text" value={reason} onChange={e => setReason(e.target.value)} className="w-full border rounded p-2 text-sm" placeholder="e.g. Issue resolved, reconciliation verified" />
+                  <input type="text" value={reason} onChange={e => setReason(e.target.value)} className="w-full border rounded p-2 text-sm text-gray-900" placeholder="e.g. Issue resolved, reconciliation verified" />
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-gray-900 mb-1">MFA Verification (TOTP) *</label>
-                  <input type="text" value={mfaToken} onChange={e => setMfaToken(e.target.value)} className="w-full border rounded p-2 text-sm" placeholder="6-digit code" maxLength={6} />
+                  <input type="text" value={mfaToken} onChange={e => setMfaToken(e.target.value)} className="w-full border rounded p-2 text-sm text-gray-900" placeholder="6-digit code" maxLength={6} />
                 </div>
                 <div className="pt-4">
                   <button onClick={() => handleToggle(false)} disabled={loading} className="w-full bg-green-600 text-white font-bold py-3 rounded hover:bg-green-700 disabled:opacity-50 transition-colors">
@@ -178,3 +178,4 @@ export default function EmergencyCommandCenter() {
     </div>
   );
 }
+
