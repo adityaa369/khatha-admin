@@ -65,7 +65,7 @@ export default function FinancialCommandCenter() {
                 <div className="mt-4 space-y-2">
                   <div className="flex justify-between"><span className="text-gray-600">Committed:</span> <span className="font-bold text-green-700">{payments?.data?.historical?.paymentsCommitted}</span></div>
                   <div className="flex justify-between"><span className="text-gray-600">Rejected (Overpay):</span> <span className="font-bold text-red-600">{payments?.data?.historical?.paymentsRejected}</span></div>
-                  <div className="flex justify-between mt-2 pt-2 border-t"><span className="text-gray-600">Payment Volume:</span> <span className="font-bold">?{(payments?.data?.historical?.repaymentVolumePaise || 0) / 100}</span></div>
+                  <div className="flex justify-between mt-2 pt-2 border-t"><span className="text-gray-600">Payment Volume:</span> <span className="font-bold">₹{((payments?.data?.historical?.repaymentVolumePaise || 0) / 100).toLocaleString('en-IN')}</span></div>
                 </div>
               </div>
               <div className="border-l pl-6">
@@ -91,7 +91,7 @@ export default function FinancialCommandCenter() {
             <div className="p-6">
               <div className="mb-6 flex justify-between items-center bg-blue-50 p-4 rounded border border-blue-100">
                 <span className="font-semibold text-blue-900">Active Loan Total Payable:</span>
-                <span className="text-2xl font-bold text-blue-800">?{(loans?.data?.activeLoanTotalPayablePaise || 0) / 100}</span>
+                <span className="text-2xl font-bold text-blue-800">₹{((loans?.data?.activeLoanTotalPayablePaise || 0) / 100).toLocaleString('en-IN')}</span>
               </div>
               <div className="grid grid-cols-4 gap-4 text-center">
                 <div className="bg-gray-50 p-3 rounded border">
@@ -130,7 +130,7 @@ export default function FinancialCommandCenter() {
               </div>
               <div className="flex justify-between items-center bg-gray-50 p-4 rounded border">
                 <span className="font-semibold text-gray-700">Ledger Gap (Discrepancy):</span>
-                <span className="font-mono font-bold text-gray-900">?{(ledger?.data?.ledgerGap || 0) / 100}</span>
+                <span className="font-mono font-bold text-gray-900">₹{((ledger?.data?.ledgerGap || 0) / 100).toLocaleString('en-IN')}</span>
               </div>
               <div className="mt-4 text-sm text-gray-600">
                 <span className="font-bold">{ledger?.data?.openIncidentCount || 0}</span> Open Investigation Incidents
@@ -170,3 +170,4 @@ export default function FinancialCommandCenter() {
     </div>
   );
 }
+
