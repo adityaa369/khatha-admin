@@ -1,64 +1,146 @@
-
-import React from 'react';
+﻿"use client";
+import React, { useState, useEffect } from 'react';
 import { MetricCard } from '@/components/ui/MetricCard';
 
-export default function SecurityCommandCenter() {
+export default function SecurityTelemetry() {
+  const [overview, setOverview] = useState<any>(null);
+  const [events, setEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchSecurity = async () => {
+    try {
+      const [overviewRes, eventsRes] = await Promise.all([
+        fetch('/api/admin/security/overview'),
+        fetch('/api/admin/security/events')
+      ]);
+      
+      if (overviewRes.status === 401) {
+         window.location.href = '/login';
+         return;
+      }
+
+      if (overviewRes.ok && eventsRes.ok) {
+        const oData = await overviewRes.json();
+        const eData = await eventsRes.json();
+        setOverview(oData.data);
+        setEvents(eData.data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSecurity();
+    const interval = setInterval(fetchSecurity, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading && !overview) return <div className="min-h-screen flex items-center justify-center">Loading security telemetry...</div>;
+
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
-          <h1 className="text-2xl font-bold text-gray-900">Security Status</h1>
-          <p className="text-sm font-medium text-green-700 mt-1">?? No active critical threats. The system is blocking attacks successfully.</p>
+        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+          <h1 className="text-2xl font-bold text-gray-900">SECURITY TELEMETRY</h1>
+          <p className="text-sm font-medium mt-1 text-gray-600">
+            Append-only Audit and Threat Intelligence Store
+          </p>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8">
           <MetricCard 
-            title="Blocked Requests" 
-            value="481" 
-            status="🟢 Healthy"
-            explanation="Malicious or abusive requests intercepted by the firewall and rate limiters."
+            title="Blocked Threats" 
+            value={overview?.blockedRequests?.toString() || '0'} 
+            status="🟢 Protected"
+            explanation="Number of malicious requests intercepted and blocked before hitting financial logic."
           />
           <MetricCard 
-            title="Suspicious Sessions" 
-            value="2" 
-            status="🟡 Attention"
-            explanation="Sessions exhibiting elevated risk signals such as rapid IP changes."
+            title="OTP Replays" 
+            value={overview?.otpReplays?.toString() || '0'} 
+            status={overview?.otpReplays > 0 ? "🔴 Active Threats" : "🟢 Healthy"}
+            explanation="Attempts to reuse a consumed or expired OTP."
           />
           <MetricCard 
-            title="OTP Replay Attempts" 
-            value="3" 
-            status="🔴 Critical"
-            explanation="Attempts to reuse a previously consumed OTP."
+            title="Rate Limit Breaches" 
+            value={overview?.rateLimits?.toString() || '0'} 
+            status={overview?.rateLimits > 0 ? "🟡 Warnings" : "🟢 Healthy"}
+            explanation="IPs or Users exceeding designated RPM limits."
+          />
+          <MetricCard 
+            title="Critical Incidents" 
+            value={overview?.criticalIncidents?.toString() || '0'} 
+            status={overview?.criticalIncidents > 0 ? "🔴 Critical" : "🟢 Clear"}
+            explanation="Severity: CRITICAL events requiring manual intervention."
           />
         </div>
 
-        {/* Actionable Intelligence */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">What requires attention?</h2>
-          <ul className="space-y-4">
-             <li className="flex items-start">
-               <span className="text-yellow-600 mr-2">??</span>
-               <div>
-                 <p className="font-medium text-gray-900">2 suspicious sessions</p>
-                 <p className="text-sm text-gray-500">Detected unusual geographical movement.</p>
-               </div>
-             </li>
-             <li className="flex items-start">
-               <span className="text-red-600 mr-2">??</span>
-               <div>
-                 <p className="font-medium text-gray-900">1 repeated OTP attack</p>
-                 <p className="text-sm text-gray-500">37 attempts from a single masked source IP.</p>
-               </div>
-             </li>
-          </ul>
+        <div className="bg-white rounded-lg shadow overflow-hidden mt-8">
+          <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+            <h2 className="text-lg font-bold text-gray-900">Recent Security Events</h2>
+            <div className="text-xs text-gray-500 font-mono">Real-time (append-only)</div>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 text-sm">
+              <thead className="bg-white">
+                <tr>
+                  <th className="px-6 py-3 text-left font-semibold text-gray-600">Timestamp</th>
+                  <th className="px-6 py-3 text-left font-semibold text-gray-600">Type & Severity</th>
+                  <th className="px-6 py-3 text-left font-semibold text-gray-600">Actor</th>
+                  <th className="px-6 py-3 text-left font-semibold text-gray-600">Target Route</th>
+                  <th className="px-6 py-3 text-left font-semibold text-gray-600">Result</th>
+                  <th className="px-6 py-3 text-left font-semibold text-gray-600">Financial Impact</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-100 font-mono">
+                {events.length === 0 ? (
+                  <tr><td colSpan={6} className="px-6 py-4 text-center text-gray-500">No events found in audit log.</td></tr>
+                ) : (
+                  events.map((e, idx) => (
+                    <tr key={idx} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-500 text-xs">
+                        {new Date(e.createdAt).toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="font-bold text-gray-900">{e.eventType}</div>
+                        <div className={`text-xs mt-1 ${
+                          e.severity === 'CRITICAL' ? 'text-red-600 font-bold' : 
+                          e.severity === 'HIGH' ? 'text-orange-500' : 'text-gray-500'
+                        }`}>{e.severity}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-gray-900">{e.actorType}</div>
+                        <div className="text-xs text-gray-500 truncate max-w-[150px]">{e.actorId || 'Anonymous'}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-gray-900 truncate max-w-[200px]">{e.route || 'N/A'}</div>
+                        <div className="text-xs text-gray-500 truncate max-w-[150px]">IP: {e.ipReference || 'N/A'}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 py-1 text-xs rounded-full font-medium ${
+                          e.result === 'BLOCKED' ? 'bg-red-100 text-red-800' :
+                          e.result === 'SUCCESS' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {e.result}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="font-medium text-gray-900">{e.financialImpact}</div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          {e.reachedFinancialLogic ? '🔴 Reached Core' : '🟢 Blocked at Edge'}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-        
-        {/* Read Only Proof */}
-        <div className="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded text-sm mt-8">
-          <strong>Security Operations Scope:</strong> This module is strictly observational. Administrative capabilities such as suspending accounts are governed by independent, highly-controlled operational workflows and are not available here.
-        </div>
+
       </div>
     </div>
   );
