@@ -55,25 +55,25 @@ export default function SecurityTelemetry() {
           <MetricCard 
             title="Blocked Threats" 
             value={overview?.blockedRequests?.toString() || '0'} 
-            status="🟢 Protected"
+            status="🟢 Healthy"
             explanation="Number of malicious requests intercepted and blocked before hitting financial logic."
           />
           <MetricCard 
             title="OTP Replays" 
             value={overview?.otpReplays?.toString() || '0'} 
-            status={overview?.otpReplays > 0 ? "🔴 Active Threats" : "🟢 Healthy"}
+            status={overview?.otpReplays > 0 ? "🔴 Critical" : "🟢 Healthy"}
             explanation="Attempts to reuse a consumed or expired OTP."
           />
           <MetricCard 
             title="Rate Limit Breaches" 
             value={overview?.rateLimits?.toString() || '0'} 
-            status={overview?.rateLimits > 0 ? "🟡 Warnings" : "🟢 Healthy"}
+            status={overview?.rateLimits > 0 ? "🟡 Attention" : "🟢 Healthy"}
             explanation="IPs or Users exceeding designated RPM limits."
           />
           <MetricCard 
             title="Critical Incidents" 
             value={overview?.criticalIncidents?.toString() || '0'} 
-            status={overview?.criticalIncidents > 0 ? "🔴 Critical" : "🟢 Clear"}
+            status={overview?.criticalIncidents > 0 ? "🔴 Critical" : "🟢 Healthy"}
             explanation="Severity: CRITICAL events requiring manual intervention."
           />
         </div>
