@@ -74,7 +74,7 @@ export default function AdversarialAudit() {
               {report.categories.map((cat: any) => (
                 <div key={cat.name} className="flex justify-between items-center py-2 border-b border-gray-700 border-dashed">
                   <span className="text-gray-300">{cat.name}</span>
-                  <span className="font-bold text-green-400">{cat.passed}/{cat.total} ??</span>
+                  <span className="font-bold text-green-400">{cat.passed}/{cat.total} ✓</span>
                 </div>
               ))}
             </div>
@@ -94,13 +94,13 @@ export default function AdversarialAudit() {
 
             {report.critical > 0 ? (
               <div className="bg-red-900 border border-red-500 text-red-100 p-4 rounded text-sm">
-                <strong className="block text-lg mb-2">?? RELEASE BLOCKED</strong>
+                <strong className="block text-lg mb-2">🔴 RELEASE BLOCKED</strong>
                 <p>An OPS_ADMIN was able to bypass MFA on the Kill Switch endpoint.</p>
                 <p className="mt-2 font-bold uppercase">Production deployment is prohibited.</p>
               </div>
             ) : (
               <div className="bg-green-900 border border-green-500 text-green-100 p-4 rounded text-sm text-center">
-                <strong className="block text-lg mb-1">?? Admin Control Plane Security Verified</strong>
+                <strong className="block text-lg mb-1">🟢 Admin Control Plane Security Verified</strong>
                 <p>All layers (Automated, Black-Box, Browser Manipulation) successfully defended.</p>
               </div>
             )}

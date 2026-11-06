@@ -1,8 +1,6 @@
-﻿"use client";
+"use client";
 import React, { useState, useEffect } from 'react';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { ExplanationPopover } from '@/components/ui/ExplanationPopover';
-import { MetricCard } from '@/components/ui/MetricCard';
 
 export default function InfraCommandCenter() {
   const [data, setData] = useState<any>(null);
@@ -33,7 +31,7 @@ export default function InfraCommandCenter() {
 
   useEffect(() => {
     fetchInfra();
-    const interval = setInterval(fetchInfra, 5000); // 5-second polling for infrastructure
+    const interval = setInterval(fetchInfra, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -43,6 +41,7 @@ export default function InfraCommandCenter() {
   const dbLatency = data?.infrastructure?.database?.latencyMs;
   const redisStatus = data?.infrastructure?.redis?.status;
   const redisLatency = data?.infrastructure?.redis?.latencyMs;
+  const redisMode = data?.infrastructure?.redis?.mode;
   
   const httpLatency = data?.health?.http?.latency;
   const httpStats = data?.health?.http;
@@ -57,9 +56,9 @@ export default function InfraCommandCenter() {
       <div className="max-w-6xl mx-auto space-y-6">
         
         <div className={`bg-white rounded-lg shadow p-6 border-l-4 ${error || dbStatus !== 'CONNECTED' ? 'border-red-500' : 'border-green-500'}`}>
-          <h1 className="text-2xl font-bold text-gray-900">KHATHA INFRASTRUCTURE</h1>
+          <h1 className="text-2xl font-bold text-gray-900">HANDCREDIT INFRASTRUCTURE</h1>
           <p className={`text-sm font-medium mt-1 ${error || dbStatus !== 'CONNECTED' ? 'text-red-700' : 'text-green-700'}`}>
-            {error ? '?? UNABLE TO REACH BACKEND' : (dbStatus === 'CONNECTED' ? '?? ALL CORE SYSTEMS OPERATIONAL' : '?? CRITICAL INFRASTRUCTURE DEGRADED')}
+            {error ? '🔴 UNABLE TO REACH BACKEND' : (dbStatus === 'CONNECTED' ? '🟢 ALL CORE SYSTEMS OPERATIONAL' : '🔴 CRITICAL INFRASTRUCTURE DEGRADED')}
           </p>
         </div>
 
@@ -80,8 +79,8 @@ export default function InfraCommandCenter() {
 
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-lg font-bold text-gray-900 mb-4 flex justify-between items-center">
-              Redis (Upstash)
-              <StatusBadge status={redisStatus === 'READY' ? '🟢 Healthy' : '🔴 Offline'} text="" />
+              Cache / Rate Limiter
+              <StatusBadge status={redisStatus === 'READY' ? '🟢 Healthy' : '🔴 Offline'} text={redisMode === 'IN_MEMORY_FALLBACK' ? 'IN-MEMORY' : 'REDIS'} />
             </h2>
             <div className="space-y-2 font-mono text-sm">
               <div className="flex justify-between bg-gray-50 p-2 rounded border">

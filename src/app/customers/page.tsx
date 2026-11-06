@@ -1,37 +1,237 @@
-
-import React from 'react';
+"use client";
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { MetricCard } from '@/components/ui/MetricCard';
+import { StatusBadge } from '@/components/ui/StatusBadge';
 
 export default function CustomerCommandCenter() {
-  return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900">Customer Command Center</h1>
-        <p className="text-sm text-gray-600 mb-8">What is happening with our customers?</p>
-        
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <MetricCard 
-            title="Total Customers" 
-            value="12,482" 
-          />
-          <MetricCard 
-            title="Active Customers" 
-            value="11,903" 
-            status="🟢 Healthy"
-          />
-          <MetricCard 
-            title="Pending KYC" 
-            value="381" 
-            status="🟡 Attention"
-          />
-          <MetricCard 
-            title="Security Alerts" 
-            value="19" 
-            status="🔴 Critical"
-            explanation="Unresolved identity or authentication anomalies."
-          />
+    const [overview, setOverview] = useState<any>(null);
+    const [customers, setCustomers] = useState<any[]>([]);
+    const [search, setSearch] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [actionId, setActionId] = useState<string | null>(null);
+
+    const fetchCustomers = async (q = search) => {
+        setLoading(true);
+        try {
+            const res = await fetch(`/api/admin/customers${q ? `?search=${encodeURIComponent(q)}` : ''}`);
+            if (res.status === 401) {
+                window.location.href = '/login';
+                return;
+            }
+            const json = await res.json();
+            if (json.success) {
+                setOverview(json.overview || {});
+                setCustomers(json.customers || []);
+            }
+        } catch {
+            // ignore
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchCustomers('');
+    }, []);
+
+    const handleToggleSuspend = async (user: any) => {
+        const targetId = user.id || user._id;
+        const nextSuspend = !user.isSuspended;
+        setActionId(targetId);
+        try {
+            const res = await fetch(`/api/admin/customers/${encodeURIComponent(targetId)}/suspend`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    suspend: nextSuspend,
+                    reason: nextSuspend ? 'Suspended via HandCredit Admin Portal' : 'Re-activated via HandCredit Admin Portal',
+                }),
+            });
+            if (res.ok) {
+                await fetchCustomers(search);
+            }
+        } finally {
+            setActionId(null);
+        }
+    };
+
+    const handleVerifyEmail = async (user: any) => {
+        const targetId = user.id || user._id;
+        setActionId(targetId);
+        try {
+            const res = await fetch(`/api/admin/customers/${encodeURIComponent(targetId)}/verify-email`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            if (res.ok) {
+                await fetchCustomers(search);
+            }
+        } finally {
+            setActionId(null);
+        }
+    };
+
+    return (
+        <div className="p-6 sm:p-8">
+            <div className="max-w-7xl mx-auto space-y-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900">Users & Account Management</h1>
+                        <p className="text-sm text-gray-600">Real-time directory of all registered HandCredit users</p>
+                    </div>
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            fetchCustomers(search);
+                        }}
+                        className="flex gap-2 w-full sm:w-auto"
+                    >
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Search mobile, name, email, city..."
+                            className="border border-gray-300 rounded-lg px-3.5 py-2 text-sm bg-white text-gray-900 w-full sm:w-72"
+                        />
+                        <button
+                            type="submit"
+                            className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-semibold hover:bg-emerald-700"
+                        >
+                            Search
+                        </button>
+                    </form>
+                </div>
+
+                {/* Live Overview Metrics */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <MetricCard
+                        title="Total Registered Users"
+                        value={overview ? Number(overview.totalCustomers || 0).toLocaleString('en-IN') : '...'}
+                        status="🟢 Healthy"
+                    />
+                    <MetricCard
+                        title="Active Accounts"
+                        value={overview ? Number(overview.active || 0).toLocaleString('en-IN') : '...'}
+                        status="🟢 Healthy"
+                    />
+                    <MetricCard
+                        title="Unverified Emails"
+                        value={overview ? Number(overview.pendingKyc || 0).toLocaleString('en-IN') : '...'}
+                        status={(overview?.pendingKyc || 0) > 0 ? '🟡 Attention' : '🟢 Healthy'}
+                        explanation="Users who registered via Mobile OTP and have not yet clicked their email verification link."
+                    />
+                    <MetricCard
+                        title="Suspended Accounts"
+                        value={overview ? Number(overview.suspendedCount || 0).toLocaleString('en-IN') : '...'}
+                        status={(overview?.suspendedCount || 0) > 0 ? '🔴 Critical' : '🟢 Healthy'}
+                        explanation="Accounts blocked from accessing the platform."
+                    />
+                </div>
+
+                {/* Live User Table */}
+                <div className="bg-white rounded-xl border shadow-sm overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200 text-sm">
+                        <thead className="bg-gray-50 text-xs font-semibold text-gray-500 uppercase">
+                            <tr>
+                                <th className="px-5 py-3.5 text-left">User</th>
+                                <th className="px-5 py-3.5 text-left">Mobile</th>
+                                <th className="px-5 py-3.5 text-left">Email & Verification</th>
+                                <th className="px-5 py-3.5 text-left">DOB / City</th>
+                                <th className="px-5 py-3.5 text-left">Status</th>
+                                <th className="px-5 py-3.5 text-right">Operator Controls</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                            {loading ? (
+                                <tr>
+                                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                                        Loading live users from MongoDB...
+                                    </td>
+                                </tr>
+                            ) : customers.length === 0 ? (
+                                <tr>
+                                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                                        No matching users found.
+                                    </td>
+                                </tr>
+                            ) : (
+                                customers.map((u) => {
+                                    const uid = u.id || u._id;
+                                    const fullName = `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'HandCredit User';
+                                    const isBusy = actionId === uid;
+                                    return (
+                                        <tr key={uid} className="hover:bg-gray-50">
+                                            <td className="px-5 py-4">
+                                                <Link
+                                                    href={`/customers/${encodeURIComponent(uid)}`}
+                                                    className="font-bold text-gray-900 hover:text-emerald-600 hover:underline block"
+                                                >
+                                                    {fullName}
+                                                </Link>
+                                                <span className="text-xs text-gray-400 font-mono">
+                                                    ID: {String(uid).slice(0, 8)}
+                                                </span>
+                                            </td>
+                                            <td className="px-5 py-4 font-mono text-gray-800">+91 {u.phone}</td>
+                                            <td className="px-5 py-4">
+                                                <div className="text-gray-800">{u.email || '—'}</div>
+                                                <div className="mt-1">
+                                                    {u.isEmailVerified ? (
+                                                        <StatusBadge status="🟢 Healthy" text="Email Verified" />
+                                                    ) : (
+                                                        <StatusBadge status="🟡 Attention" text="Unverified Email" />
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td className="px-5 py-4 text-gray-600">
+                                                <div>DOB: {u.dob || '—'}</div>
+                                                <div className="text-xs text-gray-400">{u.city || 'India'}</div>
+                                            </td>
+                                            <td className="px-5 py-4">
+                                                {u.isSuspended ? (
+                                                    <StatusBadge status="🔴 Critical" text="SUSPENDED" />
+                                                ) : (
+                                                    <StatusBadge status="🟢 Healthy" text="ACTIVE" />
+                                                )}
+                                            </td>
+                                            <td className="px-5 py-4 text-right space-x-2 whitespace-nowrap">
+                                                <Link
+                                                    href={`/customers/${encodeURIComponent(uid)}`}
+                                                    className="px-2.5 py-1.5 rounded border border-gray-200 text-xs font-semibold text-gray-700 hover:bg-gray-100"
+                                                >
+                                                    360° View
+                                                </Link>
+                                                {!u.isEmailVerified && u.email && (
+                                                    <button
+                                                        disabled={isBusy}
+                                                        onClick={() => handleVerifyEmail(u)}
+                                                        className="px-2.5 py-1.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold hover:bg-emerald-100"
+                                                    >
+                                                        Verify Email
+                                                    </button>
+                                                )}
+                                                <button
+                                                    disabled={isBusy}
+                                                    onClick={() => handleToggleSuspend(u)}
+                                                    className={
+                                                        'px-2.5 py-1.5 rounded text-xs font-semibold border ' +
+                                                        (u.isSuspended
+                                                            ? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
+                                                            : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100')
+                                                    }
+                                                >
+                                                    {u.isSuspended ? 'Unsuspend' : 'Suspend'}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }

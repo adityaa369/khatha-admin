@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import React, { useState, useEffect } from 'react';
 
 export default function EmergencyCommandCenter() {
@@ -15,6 +15,10 @@ export default function EmergencyCommandCenter() {
         fetch('/api/admin/kill-switch'),
         fetch('/api/admin/kill-switch/history')
       ]);
+      if (resKs.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
       const dataKs = await resKs.json();
       const dataHist = await resHist.json();
       if (dataKs.success) setKillSwitch(dataKs.killSwitch);

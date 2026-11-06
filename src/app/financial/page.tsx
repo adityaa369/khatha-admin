@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import React, { useState, useEffect } from 'react';
 
 export default function FinancialCommandCenter() {
@@ -16,6 +16,10 @@ export default function FinancialCommandCenter() {
         fetch('/api/admin/financial/ledger'),
         fetch('/api/admin/financial/idempotency')
       ]);
+      if (resP.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
       const [dataP, dataL, dataLed, dataI] = await Promise.all([
         resP.json(), resL.json(), resLed.json(), resI.json()
       ]);

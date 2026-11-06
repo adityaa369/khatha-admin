@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { ExplanationPopover } from '@/components/ui/ExplanationPopover';
@@ -20,19 +19,19 @@ export default function SecurityEventExplorer() {
           </div>
           
           <div className="grid grid-cols-2 gap-8 mb-6">
-            <div><span className="block text-sm text-gray-500">Customer</span><span className="font-mono font-medium">����8291</span></div>
-            <div><span className="block text-sm text-gray-500">Operation</span><span className="font-medium">Loan Payment</span></div>
-            <div><span className="block text-sm text-gray-500">Resource</span><span className="font-mono font-medium">KH-10293</span></div>
+            <div><span className="block text-sm text-gray-500">Customer</span><span className="font-mono font-medium">+91 XXXXXX8291</span></div>
+            <div><span className="block text-sm text-gray-500">Operation</span><span className="font-medium">Credit Repayment</span></div>
+            <div><span className="block text-sm text-gray-500">Resource</span><span className="font-mono font-medium">HC-10293</span></div>
             <div><span className="block text-sm text-gray-500">Timestamp</span><span className="font-medium">14:31:42 TODAY</span></div>
           </div>
           
           {/* Attack Chain */}
           <div className="bg-gray-50 p-4 rounded-lg border space-y-3">
              <h3 className="font-bold text-gray-900 mb-2 border-b pb-2">Investigation Chain</h3>
-             <div className="flex justify-between"><span className="text-sm">AUTHENTICATION</span><span className="text-sm text-green-700">? JWT valid</span></div>
-             <div className="flex justify-between"><span className="text-sm">AUTHORIZATION</span><span className="text-sm text-green-700">? User authenticated</span></div>
-             <div className="flex justify-between"><span className="text-sm font-bold text-red-700">OTP</span><span className="text-sm font-bold text-red-700">? Replay detected</span></div>
-             <div className="flex justify-between"><span className="text-sm">RATE LIMIT</span><span className="text-sm text-green-700">? Within limit</span></div>
+             <div className="flex justify-between"><span className="text-sm">AUTHENTICATION</span><span className="text-sm text-green-700">✓ JWT valid</span></div>
+             <div className="flex justify-between"><span className="text-sm">AUTHORIZATION</span><span className="text-sm text-green-700">✓ User authenticated</span></div>
+             <div className="flex justify-between"><span className="text-sm font-bold text-red-700">OTP</span><span className="text-sm font-bold text-red-700">✗ Replay detected</span></div>
+             <div className="flex justify-between"><span className="text-sm">RATE LIMIT</span><span className="text-sm text-green-700">✓ Within limit</span></div>
              <div className="border-t pt-2 mt-2 flex justify-between items-center">
                <span className="font-bold text-gray-900 flex items-center">
                  FINANCIAL MUTATION
@@ -49,7 +48,7 @@ export default function SecurityEventExplorer() {
              Risk Signals
              <ExplanationPopover title="Security Risk Score" meaning="This score identifies unusual security behavior as an operational signal. It does not establish definitive fraud." />
            </h2>
-           <p className="text-sm text-gray-600 mb-4">Customer ����8291 exhibits Elevated Risk.</p>
+           <p className="text-sm text-gray-600 mb-4">Customer +91 XXXXXX8291 exhibits Elevated Risk.</p>
            <ul className="text-sm space-y-2 list-disc list-inside text-gray-700">
              <li>4 failed OTP attempts (+30)</li>
              <li>New device detected (+15)</li>

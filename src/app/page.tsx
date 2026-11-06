@@ -1,132 +1,175 @@
-﻿"use client";
+"use client";
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { MetricCard } from '@/components/ui/MetricCard';
 
 export default function Dashboard() {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [lastVerified, setLastVerified] = useState<string | null>(null);
+    const [data, setData] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
+    const [lastVerified, setLastVerified] = useState<string | null>(null);
 
-  const fetchDashboard = async () => {
-    try {
-      const res = await fetch('/api/admin/dashboard');
-      if (res.status === 401) {
-         window.location.href = '/login';
-         return;
-      }
-      if (!res.ok) throw new Error('Failed to fetch');
-      const json = await res.json();
-      if (json.success) {
-        setData(json.data);
-        setError(false);
-        setLastVerified(new Date().toLocaleTimeString());
-      } else {
-        throw new Error('API Error');
-      }
-    } catch (err) {
-      setError(true);
-    } finally {
-      setLoading(false);
+    const fetchDashboard = async () => {
+        try {
+            const res = await fetch('/api/admin/dashboard');
+            if (res.status === 401) {
+                window.location.href = '/login';
+                return;
+            }
+            if (!res.ok) throw new Error('Failed to fetch');
+            const json = await res.json();
+            if (json.success) {
+                setData(json.data);
+                setError(false);
+                setLastVerified(new Date().toLocaleTimeString());
+            } else {
+                throw new Error('API Error');
+            }
+        } catch {
+            setError(true);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchDashboard();
+        const interval = setInterval(fetchDashboard, 15000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const formatRupees = (paise: number) => {
+        if (paise === null || paise === undefined) return 'Unknown';
+        return '₹' + (paise / 100).toLocaleString('en-IN');
+    };
+
+    if (loading && !data) {
+        return <div className="min-h-screen flex items-center justify-center text-gray-600">Loading live operational telemetry...</div>;
     }
-  };
 
-  useEffect(() => {
-    fetchDashboard();
-    const interval = setInterval(fetchDashboard, 15000); // 15-second polling
-    return () => clearInterval(interval);
-  }, []);
+    const isHealthy = !error && data?.infrastructure?.database?.status === 'CONNECTED';
 
-  const formatRupees = (paise: number) => {
-      if (paise === null || paise === undefined) return 'Unknown';
-      return "₹" + (paise / 100).toLocaleString('en-IN');
-  };
-
-  if (loading && !data) {
-    return <div className="min-h-screen flex items-center justify-center">Loading operational data...</div>;
-  }
-
-  // Derive status cleanly
-  const isHealthy = !error && data?.infrastructure?.database?.status === 'CONNECTED' && data?.infrastructure?.redis?.status === 'READY';
-
-  return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
-        
-        {/* Header */}
-        <div className="bg-white border rounded-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center shadow-sm">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Good afternoon, Operator</h1>
-            <p className={"text-sm mt-1 " + (error ? 'text-red-600' : (isHealthy ? 'text-green-600' : 'text-yellow-600'))}>
-              {error ? '🔴 KHATHA REQUIRES ATTENTION: Unable to reach backend systems.' : (isHealthy ? 'Khatha is operating normally' : 'Khatha requires attention. Infrastructure may be degraded.')}
-            </p>
-          </div>
-          <div className="flex flex-col items-end mt-4 md:mt-0 space-y-2">
+    return (
+        <div className="p-6 sm:p-8">
+            <div className="max-w-7xl mx-auto space-y-6">
+                {/* Header */}
+                <div className="bg-white border rounded-xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center shadow-sm">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900">HandCredit Operational Command Center</h1>
+                        <p className={'text-sm mt-1 font-medium ' + (error ? 'text-red-600' : isHealthy ? 'text-emerald-600' : 'text-yellow-600')}>
+                            {error
+                                ? '🔴 ATTENTION REQUIRED: Unable to reach backend systems.'
+                                : isHealthy
+                                  ? '🟢 HandCredit production systems are operating normally.'
+                                  : '🟡 Infrastructure requires attention.'}
+                        </p>
+                    </div>
+                    <div className="flex flex-col items-end mt-4 md:mt-0 space-y-2">
                         <div className="flex space-x-2">
-                <span className={"text-xs px-2 py-1 rounded-full font-medium " + (error || data?.infrastructure?.redis?.status !== 'READY' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800')}>
-                API: {error || data?.infrastructure?.redis?.status !== 'READY' ? '🔴 Offline' : '🟢 Connected'}
-                </span>
-                <span className={"text-xs px-2 py-1 rounded-full font-medium " + (error || data?.infrastructure?.database?.status !== 'CONNECTED' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800')}>
-                DB: {error || data?.infrastructure?.database?.status !== 'CONNECTED' ? '🔴 Offline' : '🟢 Connected'}
-                </span>
+                            <span
+                                className={
+                                    'text-xs px-2.5 py-1 rounded-full font-semibold ' +
+                                    (error ? 'bg-red-100 text-red-800' : 'bg-emerald-100 text-emerald-800')
+                                }
+                            >
+                                API: {error ? '🔴 Offline' : '🟢 Connected'}
+                            </span>
+                            <span
+                                className={
+                                    'text-xs px-2.5 py-1 rounded-full font-semibold ' +
+                                    (error || data?.infrastructure?.database?.status !== 'CONNECTED'
+                                        ? 'bg-red-100 text-red-800'
+                                        : 'bg-emerald-100 text-emerald-800')
+                                }
+                            >
+                                MongoDB: {error || data?.infrastructure?.database?.status !== 'CONNECTED' ? '🔴 Offline' : '🟢 Connected'}
+                            </span>
+                        </div>
+                        <span className="text-xs text-gray-500 font-mono">Last verified: {lastVerified || 'Never'}</span>
+                    </div>
+                </div>
+
+                {/* Platform & User Summary */}
+                <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mt-6">LIVE PLATFORM & LEDGER METRICS</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <MetricCard
+                        title="Registered Users"
+                        value={error || data?.totalCustomers === undefined ? 'Unknown' : data.totalCustomers.toLocaleString('en-IN')}
+                        explanation="Total registered accounts on HandCredit."
+                        status={error ? '🔴 Offline' : '🟢 Healthy'}
+                    />
+                    <MetricCard
+                        title="Active Credits"
+                        value={error || data?.activeLoans === undefined ? 'Unknown' : data.activeLoans.toLocaleString('en-IN')}
+                        explanation={`Currently active mutual credit agreements (Out of ${data?.totalLoans || 0} total).`}
+                        status={error ? '🔴 Offline' : '🟢 Healthy'}
+                    />
+                    <MetricCard
+                        title="Active Outstanding Balance"
+                        value={error || data?.outstandingPaise === undefined ? 'Unknown' : formatRupees(data.outstandingPaise)}
+                        explanation="Total unpaid balance across all active Hand, Business, and Interest credits."
+                        status={error ? '🔴 Offline' : '🟢 Healthy'}
+                    />
+                    <MetricCard
+                        title="Repayments Today"
+                        value={error || data?.paymentsToday === undefined ? 'Unknown' : formatRupees(data.paymentsToday)}
+                        explanation="Total value of all repayments recorded across the platform today."
+                        status={error ? '🔴 Offline' : '🟢 Healthy'}
+                    />
+                </div>
+
+                {/* Integrity & Safety */}
+                <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mt-8">FINANCIAL INTEGRITY & INFRASTRUCTURE</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <MetricCard
+                        title="Ledger Reconciliation"
+                        value={error || data?.ledgerBalanced === null ? 'Unknown' : data.ledgerBalanced ? '₹0 Gap (Balanced)' : 'Discrepancy'}
+                        status={error || data?.ledgerBalanced === null ? '🔴 Offline' : data.ledgerBalanced ? '🟢 Healthy' : '🔴 Critical'}
+                        explanation="Difference between total system Debits and Credits. ₹0 means zero mathematical imbalance."
+                    />
+                    <MetricCard
+                        title="Open Incidents"
+                        value={error || data?.criticalIncidents === undefined ? 'Unknown' : String(data.openIncidents ?? data.criticalIncidents)}
+                        status={error ? '🔴 Offline' : (data?.criticalIncidents || 0) === 0 ? '🟢 Healthy' : '🔴 Critical'}
+                        explanation="Open financial reconciliation mismatches requiring operator investigation."
+                    />
+                    <MetricCard
+                        title="Database Ping Latency"
+                        value={error || !data?.infrastructure?.database ? 'Unknown' : `${data.infrastructure.database.latencyMs} ms`}
+                        status={error || data?.infrastructure?.database?.status !== 'CONNECTED' ? '🔴 Offline' : '🟢 Healthy'}
+                        explanation="Live round-trip PING latency from Render backend to MongoDB Atlas."
+                    />
+                    <MetricCard
+                        title="Financial Kill Switch"
+                        value={error || data?.killSwitchEnabled === undefined ? 'Unknown' : data.killSwitchEnabled ? 'ACTIVE (LOCKED)' : 'OFF (NORMAL)'}
+                        status={error ? '🔴 Offline' : data?.killSwitchEnabled ? '🔴 Critical' : '🟢 Healthy'}
+                        explanation="When ON, all credit creation and repayment mutations are paused across the platform."
+                    />
+                </div>
+
+                {/* Quick Operator Navigation Cards */}
+                <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mt-8">QUICK OPERATOR ACTIONS</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Link href="/customers" className="bg-white border rounded-xl p-5 hover:border-emerald-500 hover:shadow-md transition block">
+                        <div className="font-bold text-gray-900">Manage Users & Accounts &rarr;</div>
+                        <p className="text-xs text-gray-500 mt-1">
+                            Search registered users by phone/email, inspect credit history, verify email, or suspend accounts.
+                        </p>
+                    </Link>
+                    <Link href="/financial/loans" className="bg-white border rounded-xl p-5 hover:border-emerald-500 hover:shadow-md transition block">
+                        <div className="font-bold text-gray-900">Inspect Credits & Agreements &rarr;</div>
+                        <p className="text-xs text-gray-500 mt-1">
+                            Monitor all Hand, Business, and Interest credits, repayment progress, and attached proof documents.
+                        </p>
+                    </Link>
+                    <Link href="/emergency" className="bg-white border rounded-xl p-5 hover:border-red-500 hover:shadow-md transition block">
+                        <div className="font-bold text-red-700">Emergency Financial Kill Switch &rarr;</div>
+                        <p className="text-xs text-gray-500 mt-1">
+                            Immediately freeze or resume platform-wide financial mutations with full audit trail.
+                        </p>
+                    </Link>
+                </div>
             </div>
-            <span className="text-xs text-gray-500 font-mono">Last verified: {lastVerified || 'Never'}</span>
-          </div>
         </div>
-
-        {/* Financial Metrics */}
-        <h2 className="text-lg font-bold text-gray-900 mt-8 mb-4">FINANCIAL</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <MetricCard 
-            title="Payments Today" 
-            value={error || data?.paymentsToday === undefined ? 'Unknown' : formatRupees(data.paymentsToday)} 
-            explanation="The total value of all successfully committed loan and chit payments today."
-            status={error || data?.paymentsToday === undefined ? '🔴 Offline' : '🟢 Healthy'}
-          />
-          <MetricCard 
-            title="Active Loans" 
-            value={error || data?.activeLoans === undefined ? 'Unknown' : data.activeLoans.toLocaleString()} 
-            explanation="Number of loans currently in repayment status."
-          />
-          <MetricCard 
-            title="Ledger Gap" 
-            value={error || data?.ledgerBalanced === null ? 'Unknown' : (data.ledgerBalanced ? '₹0' : 'Discrepancy')} 
-            status={error || data?.ledgerBalanced === null ? '🔴 Offline' : (data.ledgerBalanced ? '🟢 Healthy' : '🔴 Critical')}
-            explanation="Difference between total system Debits and Credits. ₹0 means the reconciliation engine currently finds no mathematical imbalance."
-          />
-          <MetricCard 
-            title="Critical Incidents" 
-            value={error || data?.criticalIncidents === undefined ? 'Unknown' : data.criticalIncidents.toString()} 
-            status={error || data?.criticalIncidents === undefined ? '🔴 Offline' : (data.criticalIncidents === 0 ? '🟢 Healthy' : '🔴 Critical')}
-            explanation="Open financial reconciliation mismatches requiring immediate investigation."
-          />
-        </div>
-
-        {/* Infrastructure */}
-        <h2 className="text-lg font-bold text-gray-900 mt-8 mb-4">INFRASTRUCTURE</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <MetricCard 
-                        title="API P95 Latency" 
-            value={error || !data?.health?.http?.latency?.p95 ? 'Unknown' : (data.health.http.latency.p95.toFixed(2) + ' ms')} 
-            status={error || !data?.health?.http?.latency?.p95 ? '🔴 Offline' : '🟢 Healthy'}
-            explanation="This measures how quickly the server responds to requests. Source: Backend metrics."
-          />
-          <MetricCard 
-                        title="Database Latency" 
-            value={error || !data?.infrastructure?.database ? 'Unknown' : (data.infrastructure.database.latencyMs + ' ms')} 
-            status={error || data?.infrastructure?.database?.status !== 'CONNECTED' ? '🔴 Offline' : '🟢 Healthy'}
-            explanation="Live PING latency from backend to MongoDB Atlas."
-          />
-          <MetricCard 
-            title="Financial Kill Switch" 
-            value={error || data?.killSwitchEnabled === undefined ? 'Unknown' : (data.killSwitchEnabled ? 'ON' : 'OFF')} 
-            status={error || data?.killSwitchEnabled === undefined ? '🔴 Offline' : (data.killSwitchEnabled ? '🔴 Critical' : '🟢 Healthy')}
-            explanation="When ON, financial mutations are blocked across the backend. Customer history and other permitted read-only operations remain available."
-          />
-        </div>
-      </div>
-    </div>
-  );
+    );
 }
-
-

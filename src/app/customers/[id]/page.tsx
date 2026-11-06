@@ -1,82 +1,224 @@
-
-import React from 'react';
+"use client";
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { ExplanationPopover } from '@/components/ui/ExplanationPopover';
 
 export default function CustomerDetail() {
-  return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
-        
-        {/* Customer 360 Header */}
-        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-sm text-gray-500 font-mono mb-1">CUSTOMER #KH-82931</p>
-              <h1 className="text-2xl font-bold text-gray-900">Aditya A. (����8291)</h1>
-              <div className="mt-2 flex space-x-2">
-                <StatusBadge status="🟢 Healthy" text="ACTIVE" />
-                <StatusBadge status="🟢 Healthy" text="KYC VERIFIED" />
-              </div>
-            </div>
-            <div className="text-right flex space-x-4">
-              <div><span className="text-gray-500 block text-sm">Loans</span><span className="font-bold text-lg">6</span></div>
-              <div><span className="text-gray-500 block text-sm">Chits</span><span className="font-bold text-lg">3</span></div>
-              <div><span className="text-gray-500 block text-sm">Payments</span><span className="font-bold text-lg">28</span></div>
-            </div>
-          </div>
-        </div>
+    const params = useParams();
+    const id = params?.id as string;
 
-        {/* KYC Section */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-            KYC Identity
-            <ExplanationPopover title="KYC Identity" meaning="KYC information is restricted because it contains sensitive identity information. Your role allows you to see verification status but the underlying documents are masked." />
-          </h2>
-          
-          <div className="grid grid-cols-2 gap-8 text-sm">
-            <div>
-              <p className="text-gray-500 mb-1">PAN Number</p>
-              <p className="font-mono text-lg text-gray-900">������1234</p>
-            </div>
-            <div>
-              <p className="text-gray-500 mb-1">Aadhaar Number</p>
-              <p className="font-mono text-lg text-gray-900">��������7890</p>
-            </div>
-          </div>
-          
-          <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
-             <p className="text-sm text-gray-500">
-               To view sensitive information, you must provide an operational reason. This action requires MFA and will be audited.
-             </p>
-             <button className="px-4 py-2 bg-red-50 text-red-700 rounded text-sm font-medium border border-red-200 hover:bg-red-100 transition-colors">
-               ?? View Sensitive Information
-             </button>
-          </div>
-        </div>
+    const [data, setData] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const [busy, setBusy] = useState(false);
 
-        {/* Support Timeline Example */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Customer Timeline</h2>
-          <div className="border-l-2 border-gray-200 ml-3 pl-4 space-y-6">
-            <div>
-              <p className="text-xs text-gray-500 mb-1">14:32 TODAY</p>
-              <p className="font-medium">Payment ?5,000 <StatusBadge status="🟢 Healthy" text="Successful" /></p>
-              <p className="text-sm text-gray-600 mt-1">Transaction TX-918273 linked to Loan KH-10293.</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 mb-1">14:32 TODAY</p>
-              <p className="font-medium">Notification <StatusBadge status="🟢 Healthy" text="Delivered" /></p>
-              <p className="text-sm text-gray-600 mt-1">Payment confirmation delivered via FCM.</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 mb-1">12:14 TODAY</p>
-              <p className="font-medium">Login from Android Device <StatusBadge status="🟢 Healthy" text="Successful" /></p>
-            </div>
-          </div>
-        </div>
+    const fetchDetail = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch(`/api/admin/customers/${encodeURIComponent(id)}`);
+            if (res.status === 401) {
+                window.location.href = '/login';
+                return;
+            }
+            const json = await res.json();
+            if (json.success) {
+                setData(json.data);
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
 
-      </div>
-    </div>
-  );
+    useEffect(() => {
+        if (id) fetchDetail();
+    }, [id]);
+
+    const formatRupees = (paise: number) => '₹' + ((paise || 0) / 100).toLocaleString('en-IN');
+
+    const handleToggleSuspend = async () => {
+        if (!data?.user) return;
+        setBusy(true);
+        try {
+            const nextSuspend = !data.user.isSuspended;
+            await fetch(`/api/admin/customers/${encodeURIComponent(id)}/suspend`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    suspend: nextSuspend,
+                    reason: nextSuspend ? 'Suspended from Customer 360 View' : 'Unsuspended from Customer 360 View',
+                }),
+            });
+            await fetchDetail();
+        } finally {
+            setBusy(false);
+        }
+    };
+
+    const handleVerifyEmail = async () => {
+        setBusy(true);
+        try {
+            await fetch(`/api/admin/customers/${encodeURIComponent(id)}/verify-email`, { method: 'PUT' });
+            await fetchDetail();
+        } finally {
+            setBusy(false);
+        }
+    };
+
+    if (loading) {
+        return <div className="p-8 text-gray-500">Loading Customer 360 profile...</div>;
+    }
+
+    if (!data?.user) {
+        return (
+            <div className="p-8 space-y-4">
+                <p className="text-red-600 font-semibold">User not found.</p>
+                <Link href="/customers" className="text-emerald-600 hover:underline text-sm">
+                    &larr; Back to Users & Accounts
+                </Link>
+            </div>
+        );
+    }
+
+    const user = data.user;
+    const loans = data.loans || [];
+    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'HandCredit User';
+
+    return (
+        <div className="p-6 sm:p-8">
+            <div className="max-w-7xl mx-auto space-y-6">
+                <Link href="/customers" className="text-xs font-semibold text-emerald-700 hover:underline inline-block">
+                    &larr; Back to Users Directory
+                </Link>
+
+                {/* Customer 360 Header */}
+                <div className="bg-white rounded-xl shadow-sm p-6 border-l-4 border-emerald-600 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <p className="text-xs text-gray-500 font-mono mb-1">ACCOUNT ID: HC-{String(user.id || user._id).slice(0, 8).toUpperCase()}</p>
+                        <h1 className="text-2xl font-bold text-gray-900">
+                            {fullName} <span className="text-gray-500 font-mono text-base">(+91 {user.phone})</span>
+                        </h1>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                            {user.isSuspended ? (
+                                <StatusBadge status="🔴 Critical" text="SUSPENDED" />
+                            ) : (
+                                <StatusBadge status="🟢 Healthy" text="ACTIVE ACCOUNT" />
+                            )}
+                            {user.isEmailVerified ? (
+                                <StatusBadge status="🟢 Healthy" text="EMAIL VERIFIED" />
+                            ) : (
+                                <StatusBadge status="🟡 Attention" text="EMAIL UNVERIFIED" />
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3">
+                        {!user.isEmailVerified && user.email && (
+                            <button
+                                disabled={busy}
+                                onClick={handleVerifyEmail}
+                                className="px-3.5 py-2 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700"
+                            >
+                                Verify Email Manually
+                            </button>
+                        )}
+                        <button
+                            disabled={busy}
+                            onClick={handleToggleSuspend}
+                            className={
+                                'px-3.5 py-2 rounded-lg text-xs font-bold border ' +
+                                (user.isSuspended
+                                    ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'
+                                    : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100')
+                            }
+                        >
+                            {user.isSuspended ? 'Unsuspend Account' : 'Suspend Account'}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Profile Details */}
+                <div className="bg-white rounded-xl border shadow-sm p-6">
+                    <h2 className="text-base font-bold text-gray-900 mb-4">Registered Identity & Profile Details</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm">
+                        <div>
+                            <p className="text-gray-500 text-xs uppercase">Email Address</p>
+                            <p className="font-semibold text-gray-900 mt-1">{user.email || 'Not provided'}</p>
+                        </div>
+                        <div>
+                            <p className="text-gray-500 text-xs uppercase">Date of Birth & Gender</p>
+                            <p className="font-semibold text-gray-900 mt-1">
+                                {user.dob || 'Not provided'} ({user.gender || '—'})
+                            </p>
+                        </div>
+                        <div>
+                            <p className="text-gray-500 text-xs uppercase">City & Address</p>
+                            <p className="font-semibold text-gray-900 mt-1">
+                                {user.city || '—'} {user.address ? `• ${user.address}` : ''}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* User's Credits & Agreements */}
+                <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+                    <div className="p-6 border-b">
+                        <h2 className="text-base font-bold text-gray-900">
+                            Associated Credits & Mutual Agreements ({loans.length})
+                        </h2>
+                    </div>
+                    <table className="min-w-full divide-y divide-gray-200 text-sm">
+                        <thead className="bg-gray-50 text-xs font-semibold text-gray-500 uppercase">
+                            <tr>
+                                <th className="px-5 py-3 text-left">Agreement Ref</th>
+                                <th className="px-5 py-3 text-left">Role</th>
+                                <th className="px-5 py-3 text-left">Counterparty</th>
+                                <th className="px-5 py-3 text-left">Type</th>
+                                <th className="px-5 py-3 text-left">Principal</th>
+                                <th className="px-5 py-3 text-left">Paid</th>
+                                <th className="px-5 py-3 text-left">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                            {loans.length === 0 ? (
+                                <tr>
+                                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                                        No credit records found for this user.
+                                    </td>
+                                </tr>
+                            ) : (
+                                loans.map((l: any) => (
+                                    <tr key={l._id}>
+                                        <td className="px-5 py-3.5 font-mono font-semibold text-gray-900">
+                                            HC-{String(l._id).slice(-8).toUpperCase()}
+                                        </td>
+                                        <td className="px-5 py-3.5 text-xs font-bold text-gray-700">{l.role}</td>
+                                        <td className="px-5 py-3.5 text-gray-700">
+                                            {l.borrowerName} ({l.borrowerPhone})
+                                        </td>
+                                        <td className="px-5 py-3.5 uppercase text-xs font-semibold text-gray-600">
+                                            {String(l.loanType || 'hand_credit').replace('_', ' ')}
+                                        </td>
+                                        <td className="px-5 py-3.5 font-mono">{formatRupees(l.amountPaise)}</td>
+                                        <td className="px-5 py-3.5 font-mono text-emerald-700">{formatRupees(l.paidAmountPaise)}</td>
+                                        <td className="px-5 py-3.5">
+                                            <StatusBadge
+                                                status={
+                                                    l.status === 'active' || l.status === 'completed'
+                                                        ? '🟢 Healthy'
+                                                        : l.status === 'pending_approval'
+                                                          ? '🟡 Attention'
+                                                          : '🔴 Critical'
+                                                }
+                                                text={String(l.status).toUpperCase()}
+                                            />
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    );
 }

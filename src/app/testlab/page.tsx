@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from 'react';
-import { StatusBadge } from '@/components/ui/StatusBadge';
 
 export default function TestLab() {
   const [report, setReport] = useState<any>(null);
@@ -31,8 +30,8 @@ export default function TestLab() {
         {/* Command Center & Isolation Protection */}
         <div className="bg-yellow-100 rounded-lg shadow p-6 border-l-4 border-yellow-500 flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-yellow-900 mb-1">KHATHA TEST LAB</h1>
-            <p className="text-sm font-bold text-yellow-800">?? ISOLATED STAGING ENVIRONMENT</p>
+            <h1 className="text-2xl font-bold text-yellow-900 mb-1">HANDCREDIT TEST LAB</h1>
+            <p className="text-sm font-bold text-yellow-800">⚠️ ISOLATED STAGING ENVIRONMENT</p>
           </div>
           <div className="text-right text-sm font-medium text-yellow-800">
              <p>Database <span className="ml-2">🟢 Connected</span></p>
@@ -47,25 +46,25 @@ export default function TestLab() {
           <div className="col-span-1 bg-white rounded-lg shadow p-6 space-y-4">
              <h2 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Execute Scenarios</h2>
              
-             <button onClick={() => simulateRun("Loan Lifecycle")} className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 border rounded font-medium text-sm flex items-center justify-between">
-               <span>?? Run Loan Lifecycle</span>
-               <span className="text-gray-400">?</span>
+             <button onClick={() => simulateRun("Credit Lifecycle")} className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 border rounded font-medium text-sm flex items-center justify-between">
+               <span>▶ Run Credit Lifecycle</span>
+               <span className="text-gray-400">→</span>
              </button>
              <button onClick={() => simulateRun("Chit Lifecycle")} className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 border rounded font-medium text-sm flex items-center justify-between">
-               <span>?? Run Chit + Auction</span>
-               <span className="text-gray-400">?</span>
+               <span>▶ Run Chit + Auction</span>
+               <span className="text-gray-400">→</span>
              </button>
              <button onClick={() => simulateRun("Security Regression")} className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 border rounded font-medium text-sm flex items-center justify-between">
-               <span>?? Run Security Regression</span>
-               <span className="text-gray-400">?</span>
+               <span>▶ Run Security Regression</span>
+               <span className="text-gray-400">→</span>
              </button>
              <button onClick={() => simulateRun("Financial Concurrency")} className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 border rounded font-medium text-sm flex items-center justify-between">
-               <span>?? Run Financial Concurrency</span>
-               <span className="text-gray-400">?</span>
+               <span>▶ Run Financial Concurrency</span>
+               <span className="text-gray-400">→</span>
              </button>
              
              <button onClick={() => simulateRun("Full System Test")} className="w-full mt-4 px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white border rounded font-bold text-sm shadow flex justify-center">
-               ?? RUN FULL KHATHA
+               ▶ RUN FULL HANDCREDIT SUITE
              </button>
           </div>
 
@@ -99,23 +98,23 @@ export default function TestLab() {
                       
                       <div className="flex justify-between items-center text-green-700">
                         <span>[FINANCIAL] ASSERT loan.status == ACTIVE</span>
-                        <span>? PASS</span>
+                        <span>✓ PASS</span>
                       </div>
                       <div className="flex justify-between items-center text-green-700">
                         <span>[FINANCIAL] ASSERT ledger.debit == ledger.credit</span>
-                        <span>? PASS</span>
+                        <span>✓ PASS</span>
                       </div>
                       <div className="flex justify-between items-center text-green-700">
                         <span>[SECURITY] ASSERT OTP.challenge.consumed == true</span>
-                        <span>? PASS</span>
+                        <span>✓ PASS</span>
                       </div>
                       <div className="flex justify-between items-center text-green-700">
                         <span>[CONCURRENCY] ASSERT overpayment_rejected == true</span>
-                        <span>? PASS</span>
+                        <span>✓ PASS</span>
                       </div>
                       <div className="flex justify-between items-center text-green-700">
                         <span>[RECONCILIATION] ASSERT LOAN-003 == PASS</span>
-                        <span>? PASS</span>
+                        <span>✓ PASS</span>
                       </div>
                       
                       <div className="mt-8 border-t border-gray-200 pt-6">
@@ -126,7 +125,7 @@ export default function TestLab() {
                            </div>
                            <div className="bg-white p-4 border rounded text-center">
                              <p className="text-xs text-gray-500 mb-1">SYSTEM RESULT</p>
-                             <p className="text-2xl font-bold text-green-600">?? PASS</p>
+                             <p className="text-2xl font-bold text-green-600">🟢 PASS</p>
                            </div>
                         </div>
                       </div>

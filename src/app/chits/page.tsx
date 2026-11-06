@@ -41,7 +41,7 @@ export default function ChitCommandCenter() {
           <div className="flex justify-between items-start">
             <div>
               <h3 className="text-xl font-bold">Chit #CH-182 <span className="text-sm font-normal text-gray-500 ml-2">Cycle 7</span></h3>
-              <div className="mt-2 text-3xl font-bold text-gray-900">?42,000 <span className="text-sm text-gray-500 font-normal">Current lowest bid</span></div>
+              <div className="mt-2 text-3xl font-bold text-gray-900">₹42,000 <span className="text-sm text-gray-500 font-normal">Current lowest bid</span></div>
             </div>
             <div className="text-right">
               <StatusBadge status="🟢 Healthy" text="LIVE" />

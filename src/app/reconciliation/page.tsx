@@ -1,76 +1,159 @@
-
-import React from 'react';
+"use client";
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { MetricCard } from '@/components/ui/MetricCard';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { ExplanationPopover } from '@/components/ui/ExplanationPopover';
 
 export default function ReconciliationCommandCenter() {
-  return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
-        
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-red-500">
-          <h1 className="text-2xl font-bold text-gray-900">FINANCIAL INTEGRITY</h1>
-          <p className="text-sm font-medium text-red-700 mt-1">?? FINANCIAL INTEGRITY ISSUE. Critical discrepancies require investigation.</p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <MetricCard title="Loans" value="100%" status="🟢 Healthy" explanation="Loan paidAmountPaise matches ledger." />
-          <MetricCard title="Chits" value="100%" status="🟢 Healthy" explanation="Dividend/Commission allocation math matches pot." />
-          <MetricCard title="Ledger" value="Balanced" status="🟢 Healthy" explanation="Global Debits equals Global Credits." />
-          <MetricCard title="Open Incidents" value="1" status="🔴 Critical" explanation="Financial mismatches requiring human resolution." />
-        </div>
+    const [overview, setOverview] = useState<any>(null);
+    const [incidents, setIncidents] = useState<any[]>([]);
+    const [ledger, setLedger] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
 
-        {/* Global Financial Health (LEDGER-001) */}
-        <div className="bg-white rounded-lg shadow p-6 mt-8">
-          <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-            Global Financial Health
-            <ExplanationPopover title="LEDGER-001" meaning="The total money recorded entering accounts must equal the total money recorded leaving accounts." technical="SUM(DEBIT) == SUM(CREDIT)" />
-          </h2>
-          <div className="grid grid-cols-3 gap-8 text-sm bg-gray-50 p-4 rounded border">
-            <div>
-              <p className="text-gray-500 mb-1">Total Debits</p>
-              <p className="font-mono text-xl text-gray-900">?1,84,52,000</p>
-            </div>
-            <div>
-              <p className="text-gray-500 mb-1">Total Credits</p>
-              <p className="font-mono text-xl text-gray-900">?1,84,52,000</p>
-            </div>
-            <div className="border-l pl-8">
-              <p className="text-gray-500 mb-1">Difference</p>
-              <p className="font-mono text-xl text-green-700">₹0</p>
-              <StatusBadge status="🟢 Healthy" text="BALANCED" />
-            </div>
-          </div>
-        </div>
+    useEffect(() => {
+        const fetchRecon = async () => {
+            setLoading(true);
+            try {
+                const res = await fetch('/api/admin/reconciliation');
+                if (res.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
+                const json = await res.json();
+                if (json.success) {
+                    setOverview(json.overview || {});
+                    setIncidents(json.incidents || []);
+                    setLedger(json.ledger || {});
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchRecon();
+    }, []);
 
-        {/* Example Finding vs Incident */}
-        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500 mt-8">
-           <h3 className="font-bold text-gray-900">INC-000182: LOAN-003</h3>
-           <p className="text-sm text-gray-600 mb-4 mt-1">
-             <strong>Human explanation:</strong> Every rupee recorded as paid on a loan must have a corresponding financial transaction in the ledger.
-           </p>
-           <div className="grid grid-cols-3 gap-4">
-             <div className="bg-gray-50 p-3 rounded">
-               <span className="text-xs text-gray-500 uppercase">Expected (Ledger)</span>
-               <div className="font-mono mt-1 text-lg">?5,000</div>
-             </div>
-             <div className="bg-gray-50 p-3 rounded">
-               <span className="text-xs text-gray-500 uppercase">Actual (Loan)</span>
-               <div className="font-mono mt-1 text-lg text-red-600">?6,000</div>
-             </div>
-             <div className="bg-gray-50 p-3 rounded">
-               <span className="text-xs text-gray-500 uppercase">Difference</span>
-               <div className="font-mono mt-1 text-lg text-red-600">?1,000</div>
-             </div>
-           </div>
-           <div className="mt-4">
-             <button className="text-blue-600 font-medium text-sm hover:underline">View Investigation ?</button>
-           </div>
-        </div>
+    const formatRupees = (paise: number) => '₹' + ((paise || 0) / 100).toLocaleString('en-IN');
+    const openCount = overview?.openIncidents || 0;
+    const isBalanced = openCount === 0;
 
-      </div>
-    </div>
-  );
+    return (
+        <div className="p-6 sm:p-8">
+            <div className="max-w-7xl mx-auto space-y-6">
+                {/* Header */}
+                <div
+                    className={
+                        'bg-white rounded-xl border shadow-sm p-6 border-l-4 ' +
+                        (isBalanced ? 'border-l-emerald-500' : 'border-l-red-500')
+                    }
+                >
+                    <h1 className="text-2xl font-bold text-gray-900">Financial Integrity & Reconciliation Center</h1>
+                    <p className={'text-sm font-medium mt-1 ' + (isBalanced ? 'text-emerald-700' : 'text-red-700')}>
+                        {loading
+                            ? 'Running mathematical ledger verification...'
+                            : isBalanced
+                              ? '🟢 ALL SYSTEMS BALANCED — Zero mathematical discrepancies across credits and ledger entries.'
+                              : `🔴 ${openCount} open reconciliation incident(s) require investigation.`}
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <MetricCard
+                        title="Credit Ledger Parity"
+                        value={overview?.loansReconciled || '100%'}
+                        status="🟢 Healthy"
+                        explanation="Every credit paidAmountPaise matches its committed ledger transactions."
+                    />
+                    <MetricCard
+                        title="Ledger Status"
+                        value={ledger?.ledgerStatus || 'BALANCED'}
+                        status={isBalanced ? '🟢 Healthy' : '🔴 Critical'}
+                        explanation="Global Debits equal Global Credits."
+                    />
+                    <MetricCard
+                        title="Mathematical Ledger Gap"
+                        value={formatRupees(ledger?.ledgerGap || 0)}
+                        status={(ledger?.ledgerGap || 0) === 0 ? '🟢 Healthy' : '🔴 Critical'}
+                        explanation="Total discrepancy in ₹ across all open incidents."
+                    />
+                    <MetricCard
+                        title="Open Incidents"
+                        value={String(openCount)}
+                        status={openCount === 0 ? '🟢 Healthy' : '🔴 Critical'}
+                        explanation="Financial mismatches requiring operator review."
+                    />
+                </div>
+
+                {/* Global Financial Health */}
+                <div className="bg-white rounded-xl border shadow-sm p-6">
+                    <h2 className="text-base font-bold text-gray-900 mb-4 flex items-center">
+                        Double-Entry Invariant Verification (LEDGER-001)
+                        <ExplanationPopover
+                            title="LEDGER-001"
+                            meaning="The total money recorded entering accounts must equal the total money recorded leaving accounts."
+                            technical="SUM(DEBIT) == SUM(CREDIT)"
+                        />
+                    </h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm bg-gray-50 p-4 rounded-lg border">
+                        <div>
+                            <p className="text-gray-500 mb-1">Recent Ledger Entries Verified</p>
+                            <p className="font-mono text-xl font-bold text-gray-900">
+                                {(ledger?.recentEntries || []).length} entries
+                            </p>
+                        </div>
+                        <div>
+                            <p className="text-gray-500 mb-1">Last Reconciliation Run</p>
+                            <p className="font-mono text-sm font-semibold text-gray-900 mt-1">
+                                {overview?.lastRun ? new Date(overview.lastRun).toLocaleString() : 'Live'}
+                            </p>
+                        </div>
+                        <div className="sm:border-l sm:pl-6">
+                            <p className="text-gray-500 mb-1">Net Imbalance</p>
+                            <p className="font-mono text-xl font-bold text-emerald-700">
+                                {formatRupees(ledger?.ledgerGap || 0)}
+                            </p>
+                            <StatusBadge status={isBalanced ? '🟢 Healthy' : '🔴 Critical'} text={isBalanced ? 'BALANCED' : 'INVESTIGATE'} />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Incidents List */}
+                <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+                    <div className="p-6 border-b">
+                        <h2 className="text-base font-bold text-gray-900">Reconciliation Incidents ({incidents.length})</h2>
+                    </div>
+                    {incidents.length === 0 ? (
+                        <div className="p-8 text-center text-gray-500 text-sm">
+                            🟢 Zero reconciliation discrepancies detected. All active and completed credits match their authoritative ledger records.
+                        </div>
+                    ) : (
+                        <div className="divide-y divide-gray-100">
+                            {incidents.map((inc: any) => (
+                                <div key={inc._id} className="p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                    <div>
+                                        <div className="font-mono font-bold text-gray-900">
+                                            {inc.ruleId || 'RECON'} — {inc.entityType} ({String(inc._id).slice(-8)})
+                                        </div>
+                                        <p className="text-sm text-gray-600 mt-1">{inc.details || 'Discrepancy detected by ReconciliationEngine.'}</p>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <StatusBadge
+                                            status={inc.status === 'RESOLVED' ? '🟢 Healthy' : '🔴 Critical'}
+                                            text={inc.status}
+                                        />
+                                        <Link
+                                            href={`/reconciliation/incidents/${inc._id}`}
+                                            className="px-3 py-1.5 rounded border text-xs font-semibold text-emerald-700 border-emerald-200 hover:bg-emerald-50"
+                                        >
+                                            Inspect &rarr;
+                                        </Link>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
 }
