@@ -48,6 +48,7 @@ export default function Dashboard() {
     }
 
     const isHealthy = !error && data?.infrastructure?.database?.status === 'CONNECTED';
+    const keepAlive = data?.infrastructure?.keepAlive;
 
     return (
         <div className="p-6 sm:p-8">
@@ -65,7 +66,7 @@ export default function Dashboard() {
                         </p>
                     </div>
                     <div className="flex flex-col items-end mt-4 md:mt-0 space-y-2">
-                        <div className="flex space-x-2">
+                        <div className="flex flex-wrap gap-2">
                             <span
                                 className={
                                     'text-xs px-2.5 py-1 rounded-full font-semibold ' +
@@ -83,6 +84,9 @@ export default function Dashboard() {
                                 }
                             >
                                 MongoDB: {error || data?.infrastructure?.database?.status !== 'CONNECTED' ? '🔴 Offline' : '🟢 Connected'}
+                            </span>
+                            <span className="text-xs px-2.5 py-1 rounded-full font-semibold bg-blue-100 text-blue-800">
+                                5m Keep-Alive: {keepAlive?.enabled !== false ? '🟢 Active' : '🟡 Standby'}
                             </span>
                         </div>
                         <span className="text-xs text-gray-500 font-mono">Last verified: {lastVerified || 'Never'}</span>
@@ -148,16 +152,34 @@ export default function Dashboard() {
                 </div>
 
                 {/* Quick Operator Navigation Cards */}
-                <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mt-8">QUICK OPERATOR ACTIONS</h2>
+                <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mt-8">QUICK OPERATOR ACTIONS & SRE DASHBOARDS</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Link href="/customers" className="bg-white border rounded-xl p-5 hover:border-emerald-500 hover:shadow-md transition block">
-                        <div className="font-bold text-gray-900">Manage Users & Accounts &rarr;</div>
+                    <Link href="/database" className="bg-white border rounded-xl p-5 hover:border-emerald-500 hover:shadow-md transition block">
+                        <div className="font-bold text-gray-900">Database Query &amp; User Purge Studio &rarr;</div>
                         <p className="text-xs text-gray-500 mt-1">
-                            Search registered users by phone/email, inspect credit history, verify email, or suspend accounts.
+                            Query and delete specific user records or purge all user data while preserving schemas, indexes, and admins with zero server reload.
+                        </p>
+                    </Link>
+                    <Link href="/observability/latency" className="bg-white border rounded-xl p-5 hover:border-blue-500 hover:shadow-md transition block">
+                        <div className="font-bold text-blue-700">App Latency &amp; User Issues Dashboard &rarr;</div>
+                        <p className="text-xs text-gray-500 mt-1">
+                            Monitor P50/P95/P99 latency, slow requests (&ge; 250ms), per-route bottlenecks, stuck intents, and notification failures.
+                        </p>
+                    </Link>
+                    <Link href="/observability/failures" className="bg-white border rounded-xl p-5 hover:border-amber-500 hover:shadow-md transition block">
+                        <div className="font-bold text-amber-700">API Failures &amp; 5xx/4xx Trace Explorer &rarr;</div>
+                        <p className="text-xs text-gray-500 mt-1">
+                            Inspect exact failing routes, HTTP status codes, actor IDs, IP addresses, error messages, and stack trace summaries.
+                        </p>
+                    </Link>
+                    <Link href="/customers" className="bg-white border rounded-xl p-5 hover:border-emerald-500 hover:shadow-md transition block">
+                        <div className="font-bold text-gray-900">Manage Users &amp; Accounts &rarr;</div>
+                        <p className="text-xs text-gray-500 mt-1">
+                            Search registered users by phone/email, inspect credit history, verify email, suspend, or delete user data.
                         </p>
                     </Link>
                     <Link href="/financial/loans" className="bg-white border rounded-xl p-5 hover:border-emerald-500 hover:shadow-md transition block">
-                        <div className="font-bold text-gray-900">Inspect Credits & Agreements &rarr;</div>
+                        <div className="font-bold text-gray-900">Inspect Credits &amp; Agreements &rarr;</div>
                         <p className="text-xs text-gray-500 mt-1">
                             Monitor all Hand, Business, and Interest credits, repayment progress, and attached proof documents.
                         </p>

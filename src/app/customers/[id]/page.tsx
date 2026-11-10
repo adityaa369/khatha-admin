@@ -1,11 +1,12 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 
 export default function CustomerDetail() {
     const params = useParams();
+    const router = useRouter();
     const id = params?.id as string;
 
     const [data, setData] = useState<any>(null);
@@ -64,6 +65,31 @@ export default function CustomerDetail() {
         }
     };
 
+    const handleDeleteUser = async () => {
+        if (!data?.user) return;
+        const fullName = `${data.user.firstName || ''} ${data.user.lastName || ''}`.trim() || data.user.phone;
+        if (
+            !window.confirm(
+                `Permanently delete user "${fullName}" and cascade-delete all associated loans, transactions, ledger entries, and notifications?\n\nDatabase schemas and indexes remain preserved.`
+            )
+        ) {
+            return;
+        }
+        setBusy(true);
+        try {
+            const res = await fetch(`/api/admin/customers/${encodeURIComponent(id)}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reason: 'Deleted from Customer 360 View' }),
+            });
+            if (res.ok) {
+                router.push('/customers');
+            }
+        } finally {
+            setBusy(false);
+        }
+    };
+
     if (loading) {
         return <div className="p-8 text-gray-500">Loading Customer 360 profile...</div>;
     }
@@ -73,7 +99,7 @@ export default function CustomerDetail() {
             <div className="p-8 space-y-4">
                 <p className="text-red-600 font-semibold">User not found.</p>
                 <Link href="/customers" className="text-emerald-600 hover:underline text-sm">
-                    &larr; Back to Users & Accounts
+                    &larr; Back to Users &amp; Accounts
                 </Link>
             </div>
         );
@@ -128,30 +154,37 @@ export default function CustomerDetail() {
                                 'px-3.5 py-2 rounded-lg text-xs font-bold border ' +
                                 (user.isSuspended
                                     ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'
-                                    : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100')
+                                    : 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100')
                             }
                         >
                             {user.isSuspended ? 'Unsuspend Account' : 'Suspend Account'}
+                        </button>
+                        <button
+                            disabled={busy}
+                            onClick={handleDeleteUser}
+                            className="px-3.5 py-2 rounded-lg bg-red-600 text-white text-xs font-bold hover:bg-red-700"
+                        >
+                            Delete User Data (Cascade)
                         </button>
                     </div>
                 </div>
 
                 {/* Profile Details */}
                 <div className="bg-white rounded-xl border shadow-sm p-6">
-                    <h2 className="text-base font-bold text-gray-900 mb-4">Registered Identity & Profile Details</h2>
+                    <h2 className="text-base font-bold text-gray-900 mb-4">Registered Identity &amp; Profile Details</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm">
                         <div>
                             <p className="text-gray-500 text-xs uppercase">Email Address</p>
                             <p className="font-semibold text-gray-900 mt-1">{user.email || 'Not provided'}</p>
                         </div>
                         <div>
-                            <p className="text-gray-500 text-xs uppercase">Date of Birth & Gender</p>
+                            <p className="text-gray-500 text-xs uppercase">Date of Birth &amp; Gender</p>
                             <p className="font-semibold text-gray-900 mt-1">
                                 {user.dob || 'Not provided'} ({user.gender || '—'})
                             </p>
                         </div>
                         <div>
-                            <p className="text-gray-500 text-xs uppercase">City & Address</p>
+                            <p className="text-gray-500 text-xs uppercase">City &amp; Address</p>
                             <p className="font-semibold text-gray-900 mt-1">
                                 {user.city || '—'} {user.address ? `• ${user.address}` : ''}
                             </p>
@@ -163,7 +196,7 @@ export default function CustomerDetail() {
                 <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
                     <div className="p-6 border-b">
                         <h2 className="text-base font-bold text-gray-900">
-                            Associated Credits & Mutual Agreements ({loans.length})
+                            Associated Credits &amp; Mutual Agreements ({loans.length})
                         </h2>
                     </div>
                     <table className="min-w-full divide-y divide-gray-200 text-sm">

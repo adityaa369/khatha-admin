@@ -41,9 +41,9 @@ export async function proxyAdminMutation(endpoint: string, method: 'POST' | 'PUT
         }
 
         let bodyStr: string | undefined = undefined;
-        if (request && (method === 'POST' || method === 'PUT')) {
-            const body = await request.json().catch(() => ({}));
-            bodyStr = JSON.stringify(body);
+        if (request && (method === 'POST' || method === 'PUT' || method === 'DELETE')) {
+            const body = await request.json().catch(() => null);
+            if (body) bodyStr = JSON.stringify(body);
         }
 
         const res = await fetch(`${BACKEND_API_URL}${endpoint}`, {

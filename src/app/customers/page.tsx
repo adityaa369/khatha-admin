@@ -10,6 +10,7 @@ export default function CustomerCommandCenter() {
     const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(true);
     const [actionId, setActionId] = useState<string | null>(null);
+    const [bannerMsg, setBannerMsg] = useState<string | null>(null);
 
     const fetchCustomers = async (q = search) => {
         setLoading(true);
@@ -72,13 +73,46 @@ export default function CustomerCommandCenter() {
         }
     };
 
+    const handleDeleteUserData = async (user: any) => {
+        const targetId = user.id || user._id;
+        const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.phone || targetId;
+        if (
+            !window.confirm(
+                `Delete user "${fullName}" (+91 ${user.phone || ''}) and cascade-delete all their loans, transactions, ledger entries, and notifications?\n\nSchemas and indexes will remain 100% intact and no server reload is required.`
+            )
+        ) {
+            return;
+        }
+        setActionId(targetId);
+        setBannerMsg(null);
+        try {
+            const res = await fetch(`/api/admin/customers/${encodeURIComponent(targetId)}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reason: 'Operator deleted user data from Users directory' }),
+            });
+            const json = await res.json();
+            if (res.ok && json.success) {
+                setBannerMsg(json.message || `Deleted user ${fullName} and associated records.`);
+                await fetchCustomers(search);
+            }
+        } finally {
+            setActionId(null);
+        }
+    };
+
     return (
         <div className="p-6 sm:p-8">
             <div className="max-w-7xl mx-auto space-y-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Users & Account Management</h1>
-                        <p className="text-sm text-gray-600">Real-time directory of all registered HandCredit users</p>
+                        <h1 className="text-2xl font-bold text-gray-900">Users &amp; Account Management</h1>
+                        <p className="text-sm text-gray-600">
+                            Real-time directory of all registered HandCredit users •{' '}
+                            <Link href="/database" className="text-emerald-700 font-semibold hover:underline">
+                                Open Database Query &amp; Bulk Purge Studio &rarr;
+                            </Link>
+                        </p>
                     </div>
                     <form
                         onSubmit={(e) => {
@@ -102,6 +136,15 @@ export default function CustomerCommandCenter() {
                         </button>
                     </form>
                 </div>
+
+                {bannerMsg && (
+                    <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-xl text-sm font-semibold flex justify-between items-center">
+                        <span>✅ {bannerMsg}</span>
+                        <button onClick={() => setBannerMsg(null)} className="text-xs underline">
+                            Dismiss
+                        </button>
+                    </div>
+                )}
 
                 {/* Live Overview Metrics */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -136,7 +179,7 @@ export default function CustomerCommandCenter() {
                             <tr>
                                 <th className="px-5 py-3.5 text-left">User</th>
                                 <th className="px-5 py-3.5 text-left">Mobile</th>
-                                <th className="px-5 py-3.5 text-left">Email & Verification</th>
+                                <th className="px-5 py-3.5 text-left">Email &amp; Verification</th>
                                 <th className="px-5 py-3.5 text-left">DOB / City</th>
                                 <th className="px-5 py-3.5 text-left">Status</th>
                                 <th className="px-5 py-3.5 text-right">Operator Controls</th>
@@ -218,10 +261,17 @@ export default function CustomerCommandCenter() {
                                                         'px-2.5 py-1.5 rounded text-xs font-semibold border ' +
                                                         (u.isSuspended
                                                             ? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
-                                                            : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100')
+                                                            : 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100')
                                                     }
                                                 >
                                                     {u.isSuspended ? 'Unsuspend' : 'Suspend'}
+                                                </button>
+                                                <button
+                                                    disabled={isBusy}
+                                                    onClick={() => handleDeleteUserData(u)}
+                                                    className="px-2.5 py-1.5 rounded bg-red-600 text-white text-xs font-semibold hover:bg-red-700"
+                                                >
+                                                    Delete Data
                                                 </button>
                                             </td>
                                         </tr>
