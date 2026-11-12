@@ -134,6 +134,14 @@ export default function CustomerDetail() {
                             ) : (
                                 <StatusBadge status="🟡 Attention" text="EMAIL UNVERIFIED" />
                             )}
+                            {user.isAadhaarVerified ? (
+                                <StatusBadge
+                                    status="🟢 Healthy"
+                                    text={`UIDAI AADHAAR VERIFIED (${user.aadhaarMasked || 'XXXX-XXXX'})`}
+                                />
+                            ) : (
+                                <StatusBadge status="⚪ Unverified" text="AADHAAR eKYC PENDING" />
+                            )}
                         </div>
                     </div>
 
@@ -189,6 +197,29 @@ export default function CustomerDetail() {
                                 {user.city || '—'} {user.address ? `• ${user.address}` : ''}
                             </p>
                         </div>
+                        <div>
+                            <p className="text-gray-500 text-xs uppercase">Aadhaar eKYC Status</p>
+                            <p className="font-semibold text-gray-900 mt-1">
+                                {user.isAadhaarVerified
+                                    ? `Verified (${user.aadhaarMasked || 'XXXX-XXXX'})`
+                                    : 'Not Yet Verified'}
+                            </p>
+                        </div>
+                        {user.aadhaarKycData?.fullName && (
+                            <div>
+                                <p className="text-gray-500 text-xs uppercase">UIDAI Verified Name &amp; C/O</p>
+                                <p className="font-semibold text-emerald-800 mt-1">
+                                    {user.aadhaarKycData.fullName}{' '}
+                                    {user.aadhaarKycData.careOf ? `(${user.aadhaarKycData.careOf})` : ''}
+                                </p>
+                            </div>
+                        )}
+                        {user.aadhaarKycData?.fullAddress && (
+                            <div>
+                                <p className="text-gray-500 text-xs uppercase">UIDAI Registered Address</p>
+                                <p className="font-semibold text-gray-900 mt-1">{user.aadhaarKycData.fullAddress}</p>
+                            </div>
+                        )}
                     </div>
                 </div>
 

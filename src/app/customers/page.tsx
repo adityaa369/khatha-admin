@@ -219,11 +219,19 @@ export default function CustomerCommandCenter() {
                                             <td className="px-5 py-4 font-mono text-gray-800">+91 {u.phone}</td>
                                             <td className="px-5 py-4">
                                                 <div className="text-gray-800">{u.email || '—'}</div>
-                                                <div className="mt-1">
+                                                <div className="mt-1 flex flex-wrap gap-1.5">
                                                     {u.isEmailVerified ? (
                                                         <StatusBadge status="🟢 Healthy" text="Email Verified" />
                                                     ) : (
                                                         <StatusBadge status="🟡 Attention" text="Unverified Email" />
+                                                    )}
+                                                    {u.isAadhaarVerified ? (
+                                                        <StatusBadge
+                                                            status="🟢 Healthy"
+                                                            text={`Aadhaar: ${u.aadhaarMasked || 'Verified'}`}
+                                                        />
+                                                    ) : (
+                                                        <StatusBadge status="⚪ Unverified" text="Aadhaar Unverified" />
                                                     )}
                                                 </div>
                                             </td>
