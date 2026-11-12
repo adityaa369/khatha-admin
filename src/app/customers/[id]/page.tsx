@@ -140,7 +140,7 @@ export default function CustomerDetail() {
                                     text={`UIDAI AADHAAR VERIFIED (${user.aadhaarMasked || 'XXXX-XXXX'})`}
                                 />
                             ) : (
-                                <StatusBadge status="⚪ Unverified" text="AADHAAR eKYC PENDING" />
+                                <StatusBadge status="🟡 Attention" text="AADHAAR eKYC PENDING" />
                             )}
                         </div>
                     </div>

@@ -231,7 +231,7 @@ export default function CustomerCommandCenter() {
                                                             text={`Aadhaar: ${u.aadhaarMasked || 'Verified'}`}
                                                         />
                                                     ) : (
-                                                        <StatusBadge status="⚪ Unverified" text="Aadhaar Unverified" />
+                                                        <StatusBadge status="🟡 Attention" text="Aadhaar Unverified" />
                                                     )}
                                                 </div>
                                             </td>
