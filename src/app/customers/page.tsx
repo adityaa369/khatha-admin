@@ -147,7 +147,7 @@ export default function CustomerCommandCenter() {
                 )}
 
                 {/* Live Overview Metrics */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                     <MetricCard
                         title="Total Registered Users"
                         value={overview ? Number(overview.totalCustomers || 0).toLocaleString('en-IN') : '...'}
@@ -157,6 +157,12 @@ export default function CustomerCommandCenter() {
                         title="Active Accounts"
                         value={overview ? Number(overview.active || 0).toLocaleString('en-IN') : '...'}
                         status="🟢 Healthy"
+                    />
+                    <MetricCard
+                        title="UIDAI Aadhaar Verified"
+                        value={overview ? Number(overview.aadhaarVerifiedCount || 0).toLocaleString('en-IN') : '...'}
+                        status="🟢 Healthy"
+                        explanation="Users who have completed Paperless UIDAI Aadhaar eKYC via DigiLocker / MeriPehchaan."
                     />
                     <MetricCard
                         title="Unverified Emails"

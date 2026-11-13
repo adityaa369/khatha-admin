@@ -65,6 +65,28 @@ export default function CustomerDetail() {
         }
     };
 
+    const handleResetAadhaar = async () => {
+        if (!data?.user) return;
+        if (
+            !window.confirm(
+                `Reset UIDAI Aadhaar eKYC for this user so they can re-verify with a new Aadhaar number?`
+            )
+        ) {
+            return;
+        }
+        setBusy(true);
+        try {
+            await fetch(`/api/admin/customers/${encodeURIComponent(id)}/reset-aadhaar`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reason: 'Operator reset Aadhaar eKYC from Customer 360 View' }),
+            });
+            await fetchDetail();
+        } finally {
+            setBusy(false);
+        }
+    };
+
     const handleDeleteUser = async () => {
         if (!data?.user) return;
         const fullName = `${data.user.firstName || ''} ${data.user.lastName || ''}`.trim() || data.user.phone;
@@ -107,6 +129,7 @@ export default function CustomerDetail() {
 
     const user = data.user;
     const loans = data.loans || [];
+    const timeline = data.timeline || [];
     const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'HandCredit User';
 
     return (
@@ -155,6 +178,15 @@ export default function CustomerDetail() {
                                 Verify Email Manually
                             </button>
                         )}
+                        {user.isAadhaarVerified && (
+                            <button
+                                disabled={busy}
+                                onClick={handleResetAadhaar}
+                                className="px-3.5 py-2 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200 text-xs font-bold hover:bg-indigo-100"
+                            >
+                                Reset Aadhaar eKYC
+                            </button>
+                        )}
                         <button
                             disabled={busy}
                             onClick={handleToggleSuspend}
@@ -177,9 +209,9 @@ export default function CustomerDetail() {
                     </div>
                 </div>
 
-                {/* Profile Details */}
+                {/* Profile & UIDAI eKYC Details */}
                 <div className="bg-white rounded-xl border shadow-sm p-6">
-                    <h2 className="text-base font-bold text-gray-900 mb-4">Registered Identity &amp; Profile Details</h2>
+                    <h2 className="text-base font-bold text-gray-900 mb-4">Registered Identity &amp; UIDAI Aadhaar eKYC Profile</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm">
                         <div>
                             <p className="text-gray-500 text-xs uppercase">Email Address</p>
@@ -188,7 +220,7 @@ export default function CustomerDetail() {
                         <div>
                             <p className="text-gray-500 text-xs uppercase">Date of Birth &amp; Gender</p>
                             <p className="font-semibold text-gray-900 mt-1">
-                                {user.dob || 'Not provided'} ({user.gender || '—'})
+                                {user.dob || 'Auto-populated via Aadhaar eKYC'} ({user.gender || '—'})
                             </p>
                         </div>
                         <div>
@@ -204,6 +236,11 @@ export default function CustomerDetail() {
                                     ? `Verified (${user.aadhaarMasked || 'XXXX-XXXX'})`
                                     : 'Not Yet Verified'}
                             </p>
+                            {user.aadhaarVerifiedAt && (
+                                <p className="text-xs text-gray-500 mt-0.5">
+                                    Verified at: {new Date(user.aadhaarVerifiedAt).toLocaleString('en-IN')}
+                                </p>
+                            )}
                         </div>
                         {user.aadhaarKycData?.fullName && (
                             <div>
@@ -212,6 +249,11 @@ export default function CustomerDetail() {
                                     {user.aadhaarKycData.fullName}{' '}
                                     {user.aadhaarKycData.careOf ? `(${user.aadhaarKycData.careOf})` : ''}
                                 </p>
+                                {user.aadhaarKycData.provider && (
+                                    <p className="text-xs text-gray-500 mt-0.5">
+                                        Provider: {user.aadhaarKycData.provider}
+                                    </p>
+                                )}
                             </div>
                         )}
                         {user.aadhaarKycData?.fullAddress && (
@@ -281,6 +323,36 @@ export default function CustomerDetail() {
                             )}
                         </tbody>
                     </table>
+                </div>
+
+                {/* Account & Security Lifecycle Timeline */}
+                <div className="bg-white rounded-xl border shadow-sm p-6">
+                    <h2 className="text-base font-bold text-gray-900 mb-4">
+                        Account &amp; Security Lifecycle Audit Trail ({timeline.length})
+                    </h2>
+                    {timeline.length === 0 ? (
+                        <p className="text-sm text-gray-500">No lifecycle events recorded yet.</p>
+                    ) : (
+                        <div className="space-y-3">
+                            {timeline.map((item: any, idx: number) => (
+                                <div
+                                    key={idx}
+                                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-lg bg-gray-50 border border-gray-100 text-sm"
+                                >
+                                    <div className="flex items-center gap-2.5">
+                                        <StatusBadge
+                                            status={item.status === 'BLOCKED' ? '🔴 Critical' : '🟢 Healthy'}
+                                            text={item.status || 'LOGGED'}
+                                        />
+                                        <span className="font-semibold text-gray-800">{item.event}</span>
+                                    </div>
+                                    <span className="text-xs font-mono text-gray-500">
+                                        {item.time ? new Date(item.time).toLocaleString('en-IN') : '—'}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
